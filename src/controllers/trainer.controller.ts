@@ -5,6 +5,9 @@ import {
     create_trainer,
     fetch_trainers,
     find_trainer,
+    find_user,
+    find_user_by_id,
+    update_invite_status,
 } from "../queries/admin_queries";
 
 const db = new DB();
@@ -57,5 +60,64 @@ export default class TrainerController {
         } finally {
             conn.release();
         }
+    };
+
+    public findTrainerById = async (req: Request, res: Response) => {};
+
+    public sendInvite = async (req: Request, res: Response) => {
+        const { id } = req.body;
+        const conn = await db.getConnection();
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(
+                find_user_by_id,
+                [id]
+            );
+            if (!result.length) {
+                res.status(404).json({
+                    error: true,
+                    message: "Trainer not found!",
+                });
+            } else {
+                const promises = result.map((trainer: any) => {
+                    const name = `${trainer.first_name} ${trainer.last_name}`;
+                    return this.sendEmailinvite(
+                        trainer.id,
+                        name,
+                        trainer.email
+                    );
+                });
+                const resp = await Promise.allSettled(promises);
+                res.status(200).json(resp);
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    protected sendEmailinvite = async (
+        id: number,
+        name: string,
+        email: string
+    ) => {
+        const conn = await db.getConnection();
+        return new Promise(async (resolve, reject) => {
+            try {
+                const [result] = await conn.query<ResultSetHeader>(
+                    update_invite_status,
+                    [id]
+                );
+                if (result.affectedRows) {
+                    resolve(id);
+                } else {
+                    reject(id);
+                }
+            } catch (error) {
+                reject(id);
+            } finally {
+                conn.release();
+            }
+        });
     };
 }

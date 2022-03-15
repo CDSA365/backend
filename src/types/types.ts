@@ -38,4 +38,5 @@ export interface RotuePaths {
     adminLogin: string;
     adminVerifyOTP: string;
     createTrainer: string;
+    sendInvite: string;
 }

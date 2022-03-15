@@ -36,6 +36,7 @@ export default class Routes {
             adminLogin: "/admin/login",
             adminVerifyOTP: "/admin/verify-otp",
             createTrainer: "/admin/trainer/create",
+            sendInvite: "/admin/trainer/send-invite",
         };
     };
 
@@ -67,6 +68,10 @@ export default class Routes {
         this.router.post(
             this.paths.createTrainer,
             this.trainerController.createTrainer
+        );
+        this.router.post(
+            this.paths.sendInvite,
+            this.trainerController.sendInvite
         );
     };
 }
