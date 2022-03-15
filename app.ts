@@ -31,6 +31,7 @@ export default class App {
     };
 
     useRoutes = () => {
+        this.app.use("/", this.routes.router);
         this.app.use(this.path, this.routes.router);
     };
 
