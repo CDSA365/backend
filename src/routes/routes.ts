@@ -46,11 +46,11 @@ export default class Routes {
 
     protected initGetRoutes = () => {
         this.router.get(this.paths.index, this.indexController.index);
-        this.router.get(this.paths.getAdmin, this.adminController.getAdmin);
         this.router.get(
             this.paths.getTrainers,
             this.trainerController.fetchTrainers
         );
+        this.router.get(this.paths.getAdmin, this.adminController.getAdmin);
     };
 
     protected initPostRoutes = () => {
