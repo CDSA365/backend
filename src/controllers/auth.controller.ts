@@ -122,7 +122,8 @@ export default class AuthController {
                         message: "Wrong Password",
                     });
                 } else {
-                    res.status(200).json({ id: result.id });
+                    delete result["password"];
+                    res.status(200).json(result);
                 }
             } else {
                 res.status(400).json({
