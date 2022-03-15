@@ -1,4 +1,5 @@
 import { Router } from "express";
+import AdminController from "../controllers/admin.controller";
 import AuthController from "../controllers/auth.controller";
 import IndexController from "../controllers/index.controller";
 import TrainerController from "../controllers/trainer.controller";
@@ -11,11 +12,13 @@ export default class Routes {
     protected authController: AuthController;
     protected validator: Validator;
     protected trainerController: TrainerController;
+    protected adminController: AdminController;
     protected paths: RotuePaths;
 
     constructor() {
         this.router = Router();
         this.trainerController = new TrainerController();
+        this.adminController = new AdminController();
         this.indexController = new IndexController();
         this.authController = new AuthController();
         this.validator = new Validator();
@@ -31,6 +34,7 @@ export default class Routes {
     protected setRoutePaths = () => {
         return {
             index: "/",
+            getAdmin: "/admin/:id",
             getTrainers: "/admin/trainers",
             adminRegister: "/admin/register",
             adminLogin: "/admin/login",
@@ -42,6 +46,7 @@ export default class Routes {
 
     protected initGetRoutes = () => {
         this.router.get(this.paths.index, this.indexController.index);
+        this.router.get(this.paths.getAdmin, this.adminController.getAdmin);
         this.router.get(
             this.paths.getTrainers,
             this.trainerController.fetchTrainers

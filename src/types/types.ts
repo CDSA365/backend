@@ -33,6 +33,7 @@ export interface Constructor {
 
 export interface RotuePaths {
     index: string;
+    getAdmin: string;
     getTrainers: string;
     adminRegister: string;
     adminLogin: string;
