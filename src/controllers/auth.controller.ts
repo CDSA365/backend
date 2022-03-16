@@ -14,12 +14,17 @@ import { RegisterUserDataType, WriteResult } from "../types/types";
 import speakeasy, { GenerateSecretOptions } from "speakeasy";
 import * as QRCode from "qrcode";
 import JWT from "jsonwebtoken";
+import EmailService from "../services/email-service";
 
 const db = new DB();
 const { SIGNING_KEY } = process.env;
 
 export default class AuthController {
-    constructor() {}
+    protected emailService: EmailService;
+
+    constructor() {
+        this.emailService = new EmailService();
+    }
 
     public register = async (req: Request, res: Response) => {
         const conn = await db.getConnection();
@@ -33,15 +38,10 @@ export default class AuthController {
             if (count) {
                 res.status(400).send(user_exists);
             } else {
-                const [result, secret_token] = await this.createAdmin(
-                    admin,
-                    conn
-                );
-                const emailResult = await this.sendEmailVerification(
-                    result.insertId,
-                    email,
-                    secret_token
-                );
+                const resp = await this.createAdmin(admin, conn);
+                const [result, secret_token] = resp;
+                const { insertId } = result;
+                this.sendEmailVerification(insertId, email, secret_token);
                 res.status(200).json(result);
             }
         } catch (error) {
@@ -138,14 +138,21 @@ export default class AuthController {
         }
     };
 
-    private sendEmailVerification = async (
+    public sendEmailVerification = async (
         id: number,
         email: string,
         secret: string
     ) => {
         const payload = { id, email, secret };
-        const token = JWT.sign(payload, SIGNING_KEY as string, {
+        const jwtOption = {
             expiresIn: 60,
-        });
+        };
+        const token = JWT.sign(payload, String(SIGNING_KEY), jwtOption);
+        return this.emailService
+            .sendMail(email, "verification email", "verification")
+            .then((result) => result)
+            .catch((err) => {
+                throw new Error(err);
+            });
     };
 }

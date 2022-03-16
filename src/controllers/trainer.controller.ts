@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { PoolConnection } from "mysql2/promise";
 import DB from "../constructs/db";
 import {
     create_trainer,
@@ -9,11 +10,16 @@ import {
     find_user_by_id,
     update_invite_status,
 } from "../queries/admin_queries";
+import EmailService from "../services/email-service";
 
 const db = new DB();
 
 export default class TrainerController {
-    constructor() {}
+    protected emailService: EmailService;
+
+    constructor() {
+        this.emailService = new EmailService();
+    }
 
     public createTrainer = async (req: Request, res: Response) => {
         const conn = await db.getConnection();
@@ -80,14 +86,19 @@ export default class TrainerController {
             } else {
                 const promises = result.map((trainer: any) => {
                     const name = `${trainer.first_name} ${trainer.last_name}`;
-                    return this.sendEmailinvite(
-                        trainer.id,
-                        name,
-                        trainer.email
-                    );
+                    const to = trainer.email;
+                    const subject = "Invitation to register";
+                    const template = "registeration-invite";
+                    return this.emailService.sendMail(to, subject, template);
                 });
                 const resp = await Promise.allSettled(promises);
-                res.status(200).json(resp);
+                const statusPromises = resp.map((res: any) => {
+                    if (res.value.sent) {
+                        return this.updateInviteStatus(res.value.email, conn);
+                    }
+                });
+                const statusResp = await Promise.allSettled(statusPromises);
+                res.status(200).json(statusResp);
             }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
@@ -96,27 +107,20 @@ export default class TrainerController {
         }
     };
 
-    protected sendEmailinvite = async (
-        id: number,
-        name: string,
-        email: string
-    ) => {
-        const conn = await db.getConnection();
+    protected updateInviteStatus = (
+        email: string,
+        conn: PoolConnection
+    ): Promise<number> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const [result] = await conn.query<ResultSetHeader>(
                     update_invite_status,
-                    [id]
+                    [email]
                 );
-                if (result.affectedRows) {
-                    resolve(id);
-                } else {
-                    reject(id);
-                }
+                result ? resolve(1) : reject(0);
             } catch (error) {
-                reject(id);
-            } finally {
-                conn.release();
+                console.log(error);
+                reject(0);
             }
         });
     };
