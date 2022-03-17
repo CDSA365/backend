@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import Routes from "./src/routes/routes";
 
-const { API_VERSION, API_STAGE } = process.env;
+const { API_VERSION } = process.env;
 
 export default class App {
     protected app: Application;
@@ -14,7 +14,7 @@ export default class App {
         this.app = express();
         this.middlewares = middlewares;
         this.routes = new Routes();
-        this.path = `/${API_VERSION}/${API_STAGE}`;
+        this.path = `/${API_VERSION}`;
         this.port = port;
     }
 
