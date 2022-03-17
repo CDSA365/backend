@@ -1,3 +1,5 @@
+import { JwtPayload } from "jsonwebtoken";
+
 export interface RegisterUserDataType {
     first_name: string;
     last_name: string;
@@ -40,6 +42,7 @@ export interface RotuePaths {
     adminVerifyOTP: string;
     createTrainer: string;
     sendInvite: string;
+    verifyEmail: string;
 }
 
 export interface TransportInfo {

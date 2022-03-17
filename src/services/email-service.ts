@@ -51,7 +51,7 @@ export default class EmailService {
         info: TransportInfo,
         context: VerificationEmailContext
     ) => {
-        const location = `../email-templates/invitation-template.mjml`;
+        const location = `../email-templates/email-verification-template.mjml`;
         const templatePath = path.join(__dirname, location);
         info.subject = info.subject ?? "Verify your email";
         return await this.sendMail(templatePath, info, context);

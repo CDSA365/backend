@@ -8,3 +8,4 @@ export const fetch_trainers = `select id,first_name,last_name,email,phone,addres
 export const find_user_by_id = `select * from trainers where id in (?)`;
 export const update_invite_status = `update trainers set invite_status = 1 where email = ? and invite_status = 0`;
 export const find_admin = `select first_name, last_name, email, phone, email_verified, phone_verified from admins where id = ?`;
+export const update_email_status = `update admins set email_verified = '1' where id = ? and email = ? and secret_token = ? and email_verified = '0'`;

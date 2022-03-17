@@ -52,9 +52,10 @@
                     font-family="open Sans Helvetica, Arial, sans-serif"
                     padding-left="25px"
                     padding-right="25px"
-                    ><span style="color: #feeb35">Dear {{FirstName}}</span
-                    ><br /><br />
-                    Welcome to {{CompanyName}}.</mj-text
+                >
+                    <span style="color: #feeb35"
+                        >Dear {{first_name}} {{last_name}}</span
+                    ></mj-text
                 >
                 <mj-text
                     align="left"
@@ -63,10 +64,9 @@
                     font-family="open Sans Helvetica, Arial, sans-serif"
                     padding-left="25px"
                     padding-right="25px"
-                    >We&apos;re really excited you&apos;ve decided to give us a
-                    try. In case you have any questions, feel free to reach out
-                    to us at {{ContactEmail}}. You can login to your account
-                    with your username {{UserName}}</mj-text
+                    >Please verify your email address
+                    <b>{{email}}</b> registered with CDSA 365 by clicking the
+                    button below</mj-text
                 >
                 <mj-button
                     align="left"
@@ -76,7 +76,8 @@
                     border-radius="10px"
                     color="#1AA0E1"
                     font-family="open Sans Helvetica, Arial, sans-serif"
-                    >Login</mj-button
+                    href="{{url}}"
+                    >Verify email</mj-button
                 >
                 <mj-text
                     align="left"
@@ -85,9 +86,9 @@
                     font-family="open Sans Helvetica, Arial, sans-serif"
                     padding-left="25px"
                     padding-right="25px"
-                    >Thanks, <br />
-                    The {{CompanyName}} Team</mj-text
-                >
+                    >Or copy and paste the below link in a new browser tab
+                </mj-text>
+                <mj-text> {{url}} </mj-text>
             </mj-column>
         </mj-section>
     </mj-body>

@@ -9,6 +9,7 @@ import {
     admin_lookup,
     get_secret,
     find_user,
+    update_email_status,
 } from "../queries/admin_queries";
 import {
     RegisterUserDataType,
@@ -18,17 +19,18 @@ import {
 } from "../types/types";
 import speakeasy, { GenerateSecretOptions } from "speakeasy";
 import * as QRCode from "qrcode";
-import JWT from "jsonwebtoken";
 import EmailService from "../services/email-service";
+import Token from "../services/token-service";
 
 const db = new DB();
-const { SIGNING_KEY } = process.env;
 
 export default class AuthController {
     protected emailService: EmailService;
+    protected token: Token;
 
     constructor() {
         this.emailService = new EmailService();
+        this.token = new Token();
     }
 
     public register = async (req: Request, res: Response) => {
@@ -46,7 +48,7 @@ export default class AuthController {
                 const resp = await this.createAdmin(admin, conn);
                 const [result, secret_token] = resp;
                 const { insertId } = result;
-                this.sendEmailVerification(insertId, email, secret_token);
+                this.sendEmailVerification(insertId, admin, secret_token);
                 res.status(200).json(result);
             }
         } catch (error) {
@@ -145,18 +147,17 @@ export default class AuthController {
 
     public sendEmailVerification = async (
         id: number,
-        email: string,
+        user: any,
         secret: string
     ) => {
-        const payload = { id, email, secret };
-        const jwtOption = {
-            expiresIn: 60,
-        };
-        const token = JWT.sign(payload, String(SIGNING_KEY), jwtOption);
-        const info: TransportInfo = { to: email };
+        const payload = { id, email: user.email, secret };
+        const token = this.token.get(payload, 60 * 5);
+        const info: TransportInfo = { to: user.email };
         const context: VerificationEmailContext = {
             id: id,
-            email: email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
             token: token,
             url: `http://localhost:3000/email/verify/${token}`,
         };
@@ -166,5 +167,35 @@ export default class AuthController {
             .catch((err) => {
                 throw new Error(err);
             });
+    };
+
+    public verifyEmail = async (req: Request, res: Response) => {
+        const conn = await db.getConnection();
+        try {
+            const { token } = req.params;
+            const payload: any = this.token.verify(token);
+            const { id, email, secret } = payload;
+            const [result] = await conn.query<ResultSetHeader>(
+                update_email_status,
+                [id, email, secret]
+            );
+            console.log(result);
+            if (result && result.affectedRows) {
+                res.status(200).json({
+                    verified: true,
+                    message: "Email verified!",
+                });
+            } else {
+                res.status(401).json({
+                    verified: false,
+                    message: "Email Verification failed!",
+                });
+            }
+        } catch (error: any) {
+            console.log(error.message);
+            res.status(401).json({ verified: false, message: error.message });
+        } finally {
+            conn.release();
+        }
     };
 }
