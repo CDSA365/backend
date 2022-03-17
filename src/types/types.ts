@@ -41,3 +41,27 @@ export interface RotuePaths {
     createTrainer: string;
     sendInvite: string;
 }
+
+export interface TransportInfo {
+    to: string[] | string;
+    subject?: string;
+    from?: string;
+    cc?: string[] | string;
+    bcc?: string[] | string;
+}
+
+export interface EmailContext {
+    id?: string | number;
+    first_name?: string;
+    last_name?: string;
+}
+export interface InvitationEmailContext extends EmailContext {
+    token: string;
+    url: string;
+}
+
+export interface VerificationEmailContext extends EmailContext {
+    token: string;
+    email: string;
+    url: string;
+}

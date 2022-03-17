@@ -10,7 +10,12 @@ import {
     get_secret,
     find_user,
 } from "../queries/admin_queries";
-import { RegisterUserDataType, WriteResult } from "../types/types";
+import {
+    RegisterUserDataType,
+    TransportInfo,
+    VerificationEmailContext,
+    WriteResult,
+} from "../types/types";
 import speakeasy, { GenerateSecretOptions } from "speakeasy";
 import * as QRCode from "qrcode";
 import JWT from "jsonwebtoken";
@@ -148,8 +153,15 @@ export default class AuthController {
             expiresIn: 60,
         };
         const token = JWT.sign(payload, String(SIGNING_KEY), jwtOption);
+        const info: TransportInfo = { to: email };
+        const context: VerificationEmailContext = {
+            id: id,
+            email: email,
+            token: token,
+            url: `http://localhost:3000/email/verify/${token}`,
+        };
         return this.emailService
-            .sendMail(email, "verification email", "verification")
+            .sendVerificationEmail(info, context)
             .then((result) => result)
             .catch((err) => {
                 throw new Error(err);

@@ -11,6 +11,7 @@ import {
     update_invite_status,
 } from "../queries/admin_queries";
 import EmailService from "../services/email-service";
+import { InvitationEmailContext, TransportInfo } from "../types/types";
 
 const db = new DB();
 
@@ -85,11 +86,17 @@ export default class TrainerController {
                 });
             } else {
                 const promises = result.map((trainer: any) => {
-                    const name = `${trainer.first_name} ${trainer.last_name}`;
-                    const to = trainer.email;
-                    const subject = "Invitation to register";
-                    const template = "registeration-invite";
-                    return this.emailService.sendMail(to, subject, template);
+                    const info: TransportInfo = {
+                        to: trainer.email,
+                        subject: "Invitation to join CDSA 365",
+                    };
+                    const context: InvitationEmailContext = {
+                        first_name: trainer.first_name,
+                        last_name: trainer.last_name,
+                        token: "",
+                        url: `http://localhost:3000/invite/0`,
+                    };
+                    return this.emailService.sendInvitationMail(info, context);
                 });
                 const resp = await Promise.allSettled(promises);
                 const statusPromises = resp.map((res: any) => {
