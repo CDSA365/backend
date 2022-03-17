@@ -43,6 +43,7 @@ export interface RotuePaths {
     createTrainer: string;
     sendInvite: string;
     verifyEmail: string;
+    createCat: string;
 }
 
 export interface TransportInfo {

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import AdminController from "../controllers/admin.controller";
 import AuthController from "../controllers/auth.controller";
+import CommonController from "../controllers/common.controller";
 import IndexController from "../controllers/index.controller";
 import TrainerController from "../controllers/trainer.controller";
 import Validator from "../middlewares/validator";
@@ -13,6 +14,7 @@ export default class Routes {
     protected validator: Validator;
     protected trainerCtrl: TrainerController;
     protected adminCtrl: AdminController;
+    protected commonCtrl: CommonController;
     protected paths: RotuePaths;
 
     constructor() {
@@ -22,6 +24,7 @@ export default class Routes {
         this.indexCtrl = new IndexController();
         this.authCtrl = new AuthController();
         this.validator = new Validator();
+        this.commonCtrl = new CommonController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -42,6 +45,7 @@ export default class Routes {
             createTrainer: "/admin/trainer/create",
             sendInvite: "/admin/trainer/send-invite",
             verifyEmail: "/admin/email/verify/:token",
+            createCat: "/admin/category/create",
         };
     };
 
@@ -71,5 +75,6 @@ export default class Routes {
             this.trainerCtrl.createTrainer
         );
         this.router.post(this.paths.sendInvite, this.trainerCtrl.sendInvite);
+        this.router.post(this.paths.createCat, this.commonCtrl.createCategory);
     };
 }
