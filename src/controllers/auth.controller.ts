@@ -179,7 +179,6 @@ export default class AuthController {
                 update_email_status,
                 [id, email, secret]
             );
-            console.log(result);
             if (result && result.affectedRows) {
                 res.status(200).json({
                     verified: true,
