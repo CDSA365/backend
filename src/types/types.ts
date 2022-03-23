@@ -34,8 +34,10 @@ export interface Constructor {
 }
 
 export interface RotuePaths {
+    [key: string]: string;
     index: string;
     getAdmin: string;
+    getAllTrainers: string;
     getTrainers: string;
     adminRegister: string;
     adminLogin: string;
@@ -44,6 +46,12 @@ export interface RotuePaths {
     sendInvite: string;
     verifyEmail: string;
     createCat: string;
+    getCategory: string;
+    addToCat: string;
+    getTrainer: string;
+    createClass: string;
+    fetchClasses: string;
+    updateClass: string;
 }
 
 export interface TransportInfo {

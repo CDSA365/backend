@@ -3,27 +3,35 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 import DB from "../constructs/db";
 import {
+    add_to_class_category,
+    add_to_student_category,
+    add_to_trainer_category,
     create_trainer,
+    fetch_all_trainers,
     fetch_trainers,
+    find_one_trainer,
     find_trainer,
     find_user,
     find_user_by_id,
     update_invite_status,
 } from "../queries/admin_queries";
+import DataTransformer from "../services/data-transform-service";
 import EmailService from "../services/email-service";
 import { InvitationEmailContext, TransportInfo } from "../types/types";
 
-const db = new DB();
-
 export default class TrainerController {
     protected emailService: EmailService;
+    protected transformer: DataTransformer;
+    protected db: DB;
 
     constructor() {
+        this.db = new DB();
         this.emailService = new EmailService();
+        this.transformer = new DataTransformer();
     }
 
     public createTrainer = async (req: Request, res: Response) => {
-        const conn = await db.getConnection();
+        const conn = await this.db.getConnection();
         try {
             const { first_name, last_name, email } = req.body;
             const [[{ count }]] = await conn.query<RowDataPacket[]>(
@@ -57,11 +65,18 @@ export default class TrainerController {
         }
     };
 
-    public fetchTrainers = async (req: Request, res: Response) => {
-        const conn = await db.getConnection();
+    public fetchAllTrainers = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
         try {
-            const [result] = await conn.query<RowDataPacket[]>(fetch_trainers);
-            res.status(200).json(result);
+            const [result] = await conn.query<RowDataPacket[]>(
+                fetch_all_trainers
+            );
+            if (result.length) {
+                const newData = this.transformer.transformForCategories(result);
+                res.status(200).json(newData);
+            } else {
+                res.status(200).json(result);
+            }
         } catch (error: any) {
             res.status(500).json(error.message);
         } finally {
@@ -69,11 +84,53 @@ export default class TrainerController {
         }
     };
 
-    public findTrainerById = async (req: Request, res: Response) => {};
+    public fetchTrainers = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(fetch_trainers);
+            if (result.length) {
+                const newData = this.transformer.transformForCategories(result);
+                res.status(200).json(newData);
+            } else {
+                res.status(200).json(result);
+            }
+        } catch (error: any) {
+            res.status(500).json(error.message);
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getTrainer = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const { id } = req.params;
+            const [result] = await conn.query<RowDataPacket[]>(
+                find_one_trainer,
+                [id]
+            );
+            if (result.length) {
+                const [TR] = this.transformer.transformForCategories(result);
+                res.status(200).json(TR);
+            } else {
+                res.status(404).json({
+                    error: true,
+                    message: "Trainer not found",
+                });
+            }
+        } catch (error: any) {
+            res.status(500).json({
+                error: true,
+                message: error.message,
+            });
+        } finally {
+            conn.release();
+        }
+    };
 
     public sendInvite = async (req: Request, res: Response) => {
         const { id } = req.body;
-        const conn = await db.getConnection();
+        const conn = await this.db.getConnection();
         try {
             const [result] = await conn.query<RowDataPacket[]>(
                 find_user_by_id,
