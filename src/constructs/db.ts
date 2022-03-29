@@ -30,7 +30,7 @@ export default class DB {
             port: this.db_port,
             password: this.db_password,
             waitForConnections: true,
-            connectionLimit: 10,
+            connectionLimit: 20,
             queueLimit: 0,
         });
     };

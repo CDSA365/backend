@@ -10,6 +10,8 @@ import {
     get_secret,
     find_user,
     update_email_status,
+    login_trainer,
+    update_trainer_by_token,
 } from "../queries/admin_queries";
 import {
     RegisterUserDataType,
@@ -21,20 +23,24 @@ import speakeasy, { GenerateSecretOptions } from "speakeasy";
 import * as QRCode from "qrcode";
 import EmailService from "../services/email-service";
 import Token from "../services/token-service";
-
-const db = new DB();
+import DataTransformer from "../services/data-transform-service";
+import moment from "moment";
 
 export default class AuthController {
     protected emailService: EmailService;
+    protected transformer: DataTransformer;
     protected token: Token;
+    protected db: DB;
 
     constructor() {
         this.emailService = new EmailService();
+        this.transformer = new DataTransformer();
         this.token = new Token();
+        this.db = new DB();
     }
 
     public register = async (req: Request, res: Response) => {
-        const conn = await db.getConnection();
+        const conn = await this.db.getConnection();
         try {
             const admin = req.body;
             const { email, password } = admin;
@@ -93,7 +99,7 @@ export default class AuthController {
 
     public verifyTotp = async (req: Request, res: Response) => {
         const { id, code } = req.body;
-        const conn = await db.getConnection();
+        const conn = await this.db.getConnection();
         try {
             const [[result]] = await conn.query<RowDataPacket[]>(get_secret, [
                 id,
@@ -116,7 +122,7 @@ export default class AuthController {
     };
 
     public login = async (req: Request, res: Response) => {
-        const conn = await db.getConnection();
+        const conn = await this.db.getConnection();
         const { email, password } = req.body;
         try {
             const [[result]] = await conn.query<RowDataPacket[]>(find_user, [
@@ -170,7 +176,7 @@ export default class AuthController {
     };
 
     public verifyEmail = async (req: Request, res: Response) => {
-        const conn = await db.getConnection();
+        const conn = await this.db.getConnection();
         try {
             const { token } = req.params;
             const payload: any = this.token.verify(token);
@@ -196,5 +202,57 @@ export default class AuthController {
         } finally {
             conn.release();
         }
+    };
+
+    /*********************
+     * TRAINER SECTION
+     ********************/
+    public trainerLogin = (req: Request, res: Response) => {
+        const { password: pass, email } = req.body;
+        const password = this.transformer.encrypt(pass);
+        this.db.getConnection().then((conn) => {
+            conn.query<RowDataPacket[]>(login_trainer, [email, password])
+                .then(([[result]]) => {
+                    if (result) {
+                        conn.query<ResultSetHeader>(update_trainer_by_token, [
+                            { last_login: moment().format() },
+                            result.auth_token,
+                        ])
+                            .then(([resp]) => {
+                                if (resp.affectedRows) {
+                                    res.status(200).json({
+                                        id: result.id,
+                                        token: result.auth_token,
+                                    });
+                                } else {
+                                    throw new Error(
+                                        "Something went wrong. Try again!"
+                                    );
+                                }
+                            })
+                            .catch((err) => {
+                                res.status(500).json({
+                                    error: true,
+                                    errors: [{ msg: err.message }],
+                                });
+                            })
+                            .finally(() => {
+                                conn.release();
+                            });
+                    } else {
+                        res.status(400).json({
+                            error: true,
+                            errors: [{ msg: "Email or password is incorrect" }],
+                        });
+                    }
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        error: true,
+                        errors: [{ msg: err.message }],
+                    });
+                })
+                .finally(() => conn.release());
+        });
     };
 }

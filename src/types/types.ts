@@ -51,7 +51,17 @@ export interface RotuePaths {
     getTrainer: string;
     createClass: string;
     fetchClasses: string;
+    fetchAllClasses: string;
     updateClass: string;
+    deleteClass: string;
+    getAssignedClasses: string;
+    unassignClasses: string;
+    verifyTrainer: string;
+    updateTrainer: string;
+    trainerLogin: string;
+    createTrianerLog: string;
+    updateTrainerLog: string;
+    getAttendance: string;
 }
 
 export interface TransportInfo {
@@ -77,3 +87,17 @@ export interface VerificationEmailContext extends EmailContext {
     email: string;
     url: string;
 }
+
+export interface PromiseFulfilledResult<T> {
+    status: "fulfilled";
+    value: T;
+}
+
+export interface PromiseRejectedResult {
+    status: "rejected";
+    reason: any;
+}
+
+export type PromiseSettledResult<T> =
+    | PromiseFulfilledResult<T>
+    | PromiseRejectedResult;

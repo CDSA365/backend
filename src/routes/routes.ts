@@ -34,6 +34,7 @@ export default class Routes {
 
     protected init = () => {
         this.initGetRoutes();
+        this.initPutRoutes();
         this.initPostRoutes();
         this.initPatchRoutes();
         this.initDeleteRoutes();
@@ -57,8 +58,17 @@ export default class Routes {
             getTrainer: "/admin/trainer/:id",
             createClass: "/admin/classes",
             fetchClasses: "/admin/classes",
-            deleteClass: "/admin/classes/:id",
-            updateClass: "/admin/classes",
+            fetchAllClasses: "/admin/classes/all",
+            deleteClass: "/admin/classes",
+            updateClass: "/classes/:id",
+            getAssignedClasses: "/trainer/classes/:id",
+            unassignClasses: "/trainer/classes/:trainer/:class_id",
+            verifyTrainer: "/trainer/verify/:token",
+            updateTrainer: "/trainer/:token",
+            trainerLogin: "/trainer/login",
+            createTrianerLog: "/trainer/log-time/create",
+            updateTrainerLog: "/trainer/log-time/end/:trainer_id/:class_id",
+            getAttendance: "/trainer/attendance/:trainer_id/:week/:month/:year",
         };
     };
 
@@ -71,9 +81,37 @@ export default class Routes {
         this.router.get(this.paths.verifyEmail, this.authCtrl.verifyEmail);
         this.router.get(this.paths.getCategory, this.commonCtrl.getCategory);
         this.router.get(this.paths.fetchClasses, this.classCtrl.fetchclasses);
+        this.router.get(
+            this.paths.fetchAllClasses,
+            this.classCtrl.fetchAllClasses
+        );
+        this.router.get(
+            this.paths.getAssignedClasses,
+            this.trainerCtrl.getAssignedClasses
+        );
+        this.router.get(
+            this.paths.verifyTrainer,
+            this.trainerCtrl.verifyTrainer
+        );
+        this.router.get(
+            this.paths.getAttendance,
+            this.trainerCtrl.getAttendance
+        );
         this.router.get(this.paths.getTrainers, this.trainerCtrl.fetchTrainers); // KEEP IT LAST
         this.router.get(this.paths.getTrainer, this.trainerCtrl.getTrainer); // KEEP IT LAST
         this.router.get(this.paths.getAdmin, this.adminCtrl.getAdmin); // KEEP IT LAST
+    };
+
+    protected initPutRoutes = () => {
+        this.router.put(
+            this.paths.updateTrainer,
+            this.trainerCtrl.updateTrainer
+        );
+        this.router.put(this.paths.updateClass, this.classCtrl.updateClass);
+        this.router.put(
+            this.paths.updateTrainerLog,
+            this.trainerCtrl.udpateTrainerLog
+        );
     };
 
     protected initPostRoutes = () => {
@@ -98,6 +136,16 @@ export default class Routes {
         this.router.post(this.paths.createCat, this.commonCtrl.createCategory);
         this.router.post(this.paths.addToCat, this.commonCtrl.addToCategory);
         this.router.post(this.paths.createClass, this.classCtrl.createClass);
+        this.router.post(
+            this.paths.createTrianerLog,
+            this.trainerCtrl.createTrainerLog
+        );
+        this.router.post(
+            this.paths.trainerLogin,
+            this.validator.login(),
+            this.validator.validate,
+            this.authCtrl.trainerLogin
+        );
     };
 
     protected initPatchRoutes = () => {
@@ -106,5 +154,9 @@ export default class Routes {
 
     protected initDeleteRoutes = () => {
         this.router.delete(this.paths.deleteClass, this.classCtrl.deleteClass);
+        this.router.delete(
+            this.paths.unassignClasses,
+            this.trainerCtrl.unassignClassToTrainer
+        );
     };
 }
