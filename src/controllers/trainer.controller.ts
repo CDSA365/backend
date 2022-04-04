@@ -11,7 +11,7 @@ import {
     find_trainer,
     find_trainer_with_token,
     find_user_by_id,
-    get_trainer_attendance,
+    get_trainer_class_attendance,
     get_trainer_in_classes,
     unassign_trainer,
     update_invite_status,
@@ -347,7 +347,7 @@ export default class TrainerController {
     public getAttendance = async (req: Request, res: Response) => {
         const { trainer_id, week, month, year } = req.params;
         this.db.getConnection().then((conn) => {
-            conn.query<RowDataPacket[]>(get_trainer_attendance, [
+            conn.query<RowDataPacket[]>(get_trainer_class_attendance, [
                 trainer_id,
                 year,
                 month,

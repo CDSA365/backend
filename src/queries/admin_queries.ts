@@ -30,6 +30,12 @@ export const unassign_trainer = `delete from trainer_in_classes where trainer_id
 export const update_trainer_by_token = `update trainers set ? where auth_token = ?`;
 export const login_trainer = `select id, auth_token from trainers where email = ? and password = ? limit 1`;
 export const create_class_in_cat = `insert into class_in_categories (class_id,class_category_id) values (?,?)`;
-export const create_trainer_time_log = `insert into trainer_attendance set ?`;
-export const update_trainer_time_log = `update trainer_attendance set ? where trainer_id = ? and class_id = ? and end_time is null`;
-export const get_trainer_attendance = `select ta.trainer_id, ta.day_of_week, ta.day, ta.week, ta.month, ta.year, ta.date, ta.start_time, ta.end_time, TIMESTAMPDIFF(SECOND,ta.start_time,ta.end_time) as duration, c.title from trainer_attendance ta inner join classes c on c.id = ta.class_id where ta.start_time is not null and ta.end_time is not null and trainer_id = ? and year = ? and month = ? and week = ?`;
+export const create_trainer_time_log = `insert into trainer_class_attendance set ?`;
+export const update_trainer_time_log = `update trainer_class_attendance set ? where trainer_id = ? and class_id = ? and end_time is null`;
+export const get_trainer_class_attendance = `select ta.trainer_id, ta.day_of_week, ta.day, ta.week, ta.month, ta.year, ta.date, ta.start_time, ta.end_time, TIMESTAMPDIFF(SECOND,ta.start_time,ta.end_time) as duration, c.title from trainer_class_attendance ta inner join classes c on c.id = ta.class_id where ta.start_time is not null and ta.end_time is not null and trainer_id = ? and year = ? and month = ? and week = ?`;
+export const register_student = `insert into students set ?`;
+export const check_if_student_exists = `select count(*) as count from students where (email = ? or phone = ?)`;
+export const get_all_students = `select s.*, sc.id as category_id, sc.name as category_name from students s left join student_in_categories sic on s.id = sic.student_id left join student_categories sc on sic.student_category_id = sc.id;`;
+export const update_student = `update students set ? where id = ?`;
+export const assign_student_to_class = `insert into student_in_classes (combined_id, student_id, class_id) values ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), class_id = values(class_id)`;
+export const find_student = `select * from students where email = ?`;

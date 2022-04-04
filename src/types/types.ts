@@ -62,6 +62,11 @@ export interface RotuePaths {
     createTrianerLog: string;
     updateTrainerLog: string;
     getAttendance: string;
+    registerStudent: string;
+    getAllStudents: string;
+    updateStudent: string;
+    assignStudentToClass: string;
+    studentLogin: string;
 }
 
 export interface TransportInfo {

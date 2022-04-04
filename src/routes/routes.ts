@@ -4,6 +4,7 @@ import AuthController from "../controllers/auth.controller";
 import ClassController from "../controllers/class.controller";
 import CommonController from "../controllers/common.controller";
 import IndexController from "../controllers/index.controller";
+import StudentController from "../controllers/student.controller";
 import TrainerController from "../controllers/trainer.controller";
 import Validator from "../middlewares/validator";
 import { RotuePaths } from "../types/types";
@@ -17,6 +18,7 @@ export default class Routes {
     protected adminCtrl: AdminController;
     protected commonCtrl: CommonController;
     protected classCtrl: ClassController;
+    protected studentCtrl: StudentController;
     protected paths: RotuePaths;
 
     constructor() {
@@ -28,6 +30,7 @@ export default class Routes {
         this.validator = new Validator();
         this.commonCtrl = new CommonController();
         this.classCtrl = new ClassController();
+        this.studentCtrl = new StudentController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -69,9 +72,17 @@ export default class Routes {
             createTrianerLog: "/trainer/log-time/create",
             updateTrainerLog: "/trainer/log-time/end/:trainer_id/:class_id",
             getAttendance: "/trainer/attendance/:trainer_id/:week/:month/:year",
+            registerStudent: "/student/register",
+            getAllStudents: "/admin/students/all",
+            updateStudent: "/admin/student/:id",
+            assignStudentToClass: "/admin/student/assign-to-class/:id",
+            studentLogin: "/student/login",
         };
     };
 
+    /*******************
+     * GET ROUTES
+     ******************/
     protected initGetRoutes = () => {
         this.router.get(this.paths.index, this.indexCtrl.index);
         this.router.get(
@@ -97,11 +108,18 @@ export default class Routes {
             this.paths.getAttendance,
             this.trainerCtrl.getAttendance
         );
+        this.router.get(
+            this.paths.getAllStudents,
+            this.studentCtrl.getAllStudents
+        );
         this.router.get(this.paths.getTrainers, this.trainerCtrl.fetchTrainers); // KEEP IT LAST
         this.router.get(this.paths.getTrainer, this.trainerCtrl.getTrainer); // KEEP IT LAST
         this.router.get(this.paths.getAdmin, this.adminCtrl.getAdmin); // KEEP IT LAST
     };
 
+    /*****************
+     * PUT ROUTES
+     ****************/
     protected initPutRoutes = () => {
         this.router.put(
             this.paths.updateTrainer,
@@ -112,8 +130,15 @@ export default class Routes {
             this.paths.updateTrainerLog,
             this.trainerCtrl.udpateTrainerLog
         );
+        this.router.put(
+            this.paths.updateStudent,
+            this.studentCtrl.updateStudent
+        );
     };
 
+    /*****************
+     * POST ROUTES
+     ****************/
     protected initPostRoutes = () => {
         this.router.post(
             this.paths.adminRegister,
@@ -146,12 +171,27 @@ export default class Routes {
             this.validator.validate,
             this.authCtrl.trainerLogin
         );
+        this.router.post(
+            this.paths.registerStudent,
+            this.studentCtrl.registerStudent
+        );
+        this.router.post(
+            this.paths.assignStudentToClass,
+            this.studentCtrl.assignStudentToClass
+        );
+        this.router.post(this.paths.studentLogin, this.studentCtrl.login);
     };
 
+    /*******************
+     * PATCH ROUTES
+     ******************/
     protected initPatchRoutes = () => {
         this.router.patch(this.paths.updateClass, this.classCtrl.updateClass);
     };
 
+    /******************
+     * DELETE ROUTES
+     *****************/
     protected initDeleteRoutes = () => {
         this.router.delete(this.paths.deleteClass, this.classCtrl.deleteClass);
         this.router.delete(
