@@ -4,18 +4,17 @@
     "description": "",
     "main": "server.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon ./server.ts",
-        "start": "node ./dist/server.js",
+        "dev": "env-cmd -e dev nodemon ./server.ts",
+        "start": "env-cmd -e dev node ./dist/server.js",
         "pm2": "tsc && pm2 start process.json",
         "pm2:restart": "tsc && pm2 restart process.json",
-        "build": "tsc"
+        "build": "env-cmd -e dev tsc"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/samnsimson/cdsa365-backend.git"
     },
-    "author": "",
+    "author": "Sam N Simson",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/samnsimson/cdsa365-backend/issues"
@@ -26,6 +25,7 @@
         "cors": "^2.8.5",
         "dotenv": "^16.0.0",
         "dotenv-flow": "^3.2.0",
+        "env-cmd": "^10.1.0",
         "express": "^4.17.3",
         "express-validator": "^6.14.0",
         "handlebars": "^4.7.7",
@@ -33,9 +33,11 @@
         "md5": "^2.3.0",
         "mjml": "^4.12.0",
         "moment": "^2.29.1",
+        "moment-timezone": "^0.5.34",
         "mysql2": "^2.3.3",
         "nodemailer": "^6.7.2",
         "qrcode": "^1.5.0",
+        "razorpay": "^2.8.1",
         "shortid": "^2.2.16",
         "speakeasy": "^2.0.0",
         "typescript": "^4.6.2"

@@ -6,6 +6,7 @@ import {
     check_if_student_exists,
     find_student,
     get_all_students,
+    get_students_classes,
     register_student,
     update_student,
 } from "../queries/admin_queries";
@@ -33,7 +34,9 @@ export default class StudentController {
             );
             console.log(count);
             if (count) {
-                res.status(422).json("User exists");
+                res.status(422).json(
+                    "Email or Phone number already registered"
+                );
             } else {
                 const [result] = await conn.query<ResultSetHeader>(
                     register_student,
@@ -65,7 +68,7 @@ export default class StudentController {
                 if (user.status === 0) {
                     res.status(422).json({
                         error: true,
-                        message: "Student not activated",
+                        message: "Account not activated",
                     });
                 } else if (user.password !== password) {
                     res.status(422).json({
@@ -73,12 +76,8 @@ export default class StudentController {
                         message: "Incorrect password",
                     });
                 } else {
-                    res.status(200).json({
-                        id: user.id,
-                        token: user.auth_token,
-                        email_verified: user.email_verified,
-                        phone_verified: user.phone_verified,
-                    });
+                    delete user.password;
+                    res.status(200).json(user);
                 }
             } else {
                 res.status(404).json({
@@ -88,6 +87,8 @@ export default class StudentController {
             }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
         }
     };
 
@@ -148,6 +149,22 @@ export default class StudentController {
                     message: "Unable to assign student to class",
                 });
             }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getStudentClasses = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(
+                get_students_classes,
+                [id]
+            );
+            res.status(200).json(result);
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
         } finally {

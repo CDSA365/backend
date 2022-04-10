@@ -4,6 +4,7 @@ import AuthController from "../controllers/auth.controller";
 import ClassController from "../controllers/class.controller";
 import CommonController from "../controllers/common.controller";
 import IndexController from "../controllers/index.controller";
+import PaymentController from "../controllers/payment.controller";
 import StudentController from "../controllers/student.controller";
 import TrainerController from "../controllers/trainer.controller";
 import Validator from "../middlewares/validator";
@@ -19,6 +20,7 @@ export default class Routes {
     protected commonCtrl: CommonController;
     protected classCtrl: ClassController;
     protected studentCtrl: StudentController;
+    protected paymentCtrl: PaymentController;
     protected paths: RotuePaths;
 
     constructor() {
@@ -31,6 +33,7 @@ export default class Routes {
         this.commonCtrl = new CommonController();
         this.classCtrl = new ClassController();
         this.studentCtrl = new StudentController();
+        this.paymentCtrl = new PaymentController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -71,12 +74,20 @@ export default class Routes {
             trainerLogin: "/trainer/login",
             createTrianerLog: "/trainer/log-time/create",
             updateTrainerLog: "/trainer/log-time/end/:trainer_id/:class_id",
-            getAttendance: "/trainer/attendance/:trainer_id/:week/:month/:year",
+            getAttendance: "/trainer/attendance/:trainer_id/:year/:month/:week",
+            getMonthlyDurations:
+                "/trainer/attendance/month/:trainer_id/:year/:month",
+            getYearlyDurations: "/trainer/attendance/year/:trainer_id/:year",
             registerStudent: "/student/register",
             getAllStudents: "/admin/students/all",
             updateStudent: "/admin/student/:id",
             assignStudentToClass: "/admin/student/assign-to-class/:id",
             studentLogin: "/student/login",
+            getStudentClasses: "/student/classes/:id",
+            createPaymentOrder: "/payment/create",
+            verifyPayment: "/payment/verify",
+            capturePaymentFailure: "/payment/capture-failure",
+            getPaymentHistory: "/payments/:id",
         };
     };
 
@@ -105,13 +116,29 @@ export default class Routes {
             this.trainerCtrl.verifyTrainer
         );
         this.router.get(
-            this.paths.getAttendance,
-            this.trainerCtrl.getAttendance
-        );
-        this.router.get(
             this.paths.getAllStudents,
             this.studentCtrl.getAllStudents
         );
+        this.router.get(
+            this.paths.getStudentClasses,
+            this.studentCtrl.getStudentClasses
+        );
+        this.router.get(
+            this.paths.getPaymentHistory,
+            this.paymentCtrl.getPaymentHistory
+        );
+        this.router.get(
+            this.paths.getYearlyDurations,
+            this.trainerCtrl.getYearlyDurations
+        ); // Keep this last
+        this.router.get(
+            this.paths.getMonthlyDurations,
+            this.trainerCtrl.getMonthlyDurations
+        ); // Keep this last
+        this.router.get(
+            this.paths.getAttendance,
+            this.trainerCtrl.getAttendance
+        ); // Keep this last
         this.router.get(this.paths.getTrainers, this.trainerCtrl.fetchTrainers); // KEEP IT LAST
         this.router.get(this.paths.getTrainer, this.trainerCtrl.getTrainer); // KEEP IT LAST
         this.router.get(this.paths.getAdmin, this.adminCtrl.getAdmin); // KEEP IT LAST
@@ -180,6 +207,18 @@ export default class Routes {
             this.studentCtrl.assignStudentToClass
         );
         this.router.post(this.paths.studentLogin, this.studentCtrl.login);
+        this.router.post(
+            this.paths.createPaymentOrder,
+            this.paymentCtrl.createOrder
+        );
+        this.router.post(
+            this.paths.verifyPayment,
+            this.paymentCtrl.verifyPayment
+        );
+        this.router.post(
+            this.paths.capturePaymentFailure,
+            this.paymentCtrl.captureFailedPayment
+        );
     };
 
     /*******************

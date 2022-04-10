@@ -220,10 +220,8 @@ export default class AuthController {
                         ])
                             .then(([resp]) => {
                                 if (resp.affectedRows) {
-                                    res.status(200).json({
-                                        id: result.id,
-                                        token: result.auth_token,
-                                    });
+                                    delete result.password;
+                                    res.status(200).json(result);
                                 } else {
                                     throw new Error(
                                         "Something went wrong. Try again!"

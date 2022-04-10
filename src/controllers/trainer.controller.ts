@@ -11,8 +11,10 @@ import {
     find_trainer,
     find_trainer_with_token,
     find_user_by_id,
-    get_trainer_class_attendance,
     get_trainer_in_classes,
+    get_trainer_month_attendance,
+    get_trainer_week_attendance,
+    get_trainer_year_attendance,
     unassign_trainer,
     update_invite_status,
     update_trainer_by_token,
@@ -23,6 +25,7 @@ import EmailService from "../services/email-service";
 import Token from "../services/token-service";
 import { InvitationEmailContext, TransportInfo } from "../types/types";
 import crypto from "crypto";
+import { months } from "../constants/constant";
 
 const { TRAINER_PORTAL } = process.env;
 export default class TrainerController {
@@ -347,16 +350,69 @@ export default class TrainerController {
     public getAttendance = async (req: Request, res: Response) => {
         const { trainer_id, week, month, year } = req.params;
         this.db.getConnection().then((conn) => {
-            conn.query<RowDataPacket[]>(get_trainer_class_attendance, [
+            conn.query<RowDataPacket[]>(get_trainer_week_attendance, [
                 trainer_id,
                 year,
                 month,
                 week,
-            ]).then(([result]) => {
-                const transformedData =
-                    this.transformer.transformAttendance(result);
-                res.status(200).json(transformedData);
-            });
+            ])
+                .then(([result]) => {
+                    const transformedData =
+                        this.transformer.transformAttendance(result);
+                    res.status(200).json(transformedData);
+                })
+                .finally(() => conn.release());
         });
+    };
+
+    public getMonthlyDurations = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        const { trainer_id, year, month } = req.params;
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(
+                get_trainer_month_attendance,
+                [trainer_id, year, month]
+            );
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getYearlyDurations = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        const { trainer_id, year } = req.params;
+        const obj: any = { year: +year };
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(
+                get_trainer_year_attendance,
+                [trainer_id, year]
+            );
+            Object.entries(months).map(([key, value]) => {
+                const filtered = result.filter((o) => o.month === value);
+                const duration = filtered.map((o) => ({
+                    duration: o.duration,
+                    salary: o.salary,
+                }));
+                const sum = duration.reduce(
+                    (a, b) =>
+                        Number(a) + Number(b.duration) * (b.salary / (60 * 60)),
+                    0
+                );
+                obj[key] = +sum.toFixed(2);
+            });
+            const total: any = Object.values(obj).reduce(
+                (a: any, b) => a + b,
+                0
+            );
+            obj["total"] = +(total - obj.year).toFixed(2);
+            res.status(200).json(obj);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
     };
 }

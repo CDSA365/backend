@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import moment, { months } from "moment";
+import moment from "moment-timezone";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import DB from "../constructs/db";
 import {
@@ -8,6 +8,8 @@ import {
     fetch_all_classes,
     fetch_classes,
     udpate_class,
+    update_class_category,
+    update_trainer_in_class,
 } from "../queries/admin_queries";
 import ClassServices from "../services/class-service";
 import DataTransformer from "../services/data-transform-service";
@@ -30,8 +32,10 @@ export default class ClassController {
     public createClass = async (req: Request, res: Response) => {
         const conn = await this.db.getConnection();
         try {
-            const startTime = moment(req.body.start).toISOString();
-            const endTime = moment(req.body.end).toISOString();
+            const startTime = moment(req.body.start)
+                .tz("Asia/Kolkata")
+                .format();
+            const endTime = moment(req.body.end).tz("Asia/Kolkata").format();
             const diff = moment.duration(moment(endTime).diff(startTime));
             const data = {
                 title: req.body.title,
@@ -122,7 +126,30 @@ export default class ClassController {
         const { id: class_id } = req.params;
         try {
             if ("title" in req.body) {
-                req.body.title = createSlugWithKey(req.body.title);
+                req.body.slug = createSlugWithKey(req.body.title);
+            }
+            if ("start" in req.body) {
+                req.body.start_time = req.body.start;
+                delete req.body.start;
+            }
+            if ("end" in req.body) {
+                req.body.end_time = req.body.end;
+                delete req.body.end;
+            }
+            if ("trainer" in req.body) {
+                await conn.query<ResultSetHeader>(update_trainer_in_class, [
+                    `${req.body.trainer}${class_id}`,
+                    req.body.trainer,
+                    class_id,
+                ]);
+                delete req.body.trainer;
+            }
+            if ("category" in req.body) {
+                await conn.query<ResultSetHeader>(update_class_category, [
+                    req.body.category,
+                    class_id,
+                ]);
+                delete req.body.category;
             }
             const [result] = await conn.query<ResultSetHeader>(udpate_class, [
                 req.body,
