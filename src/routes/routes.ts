@@ -5,6 +5,7 @@ import ClassController from "../controllers/class.controller";
 import CommonController from "../controllers/common.controller";
 import IndexController from "../controllers/index.controller";
 import PaymentController from "../controllers/payment.controller";
+import SMSController from "../controllers/sms.controller";
 import StudentController from "../controllers/student.controller";
 import TrainerController from "../controllers/trainer.controller";
 import Validator from "../middlewares/validator";
@@ -12,6 +13,7 @@ import { RotuePaths } from "../types/types";
 
 export default class Routes {
     public router: Router;
+    protected smsCtrl: SMSController;
     protected indexCtrl: IndexController;
     protected authCtrl: AuthController;
     protected validator: Validator;
@@ -25,6 +27,7 @@ export default class Routes {
 
     constructor() {
         this.router = Router();
+        this.smsCtrl = new SMSController();
         this.trainerCtrl = new TrainerController();
         this.adminCtrl = new AdminController();
         this.indexCtrl = new IndexController();
@@ -49,6 +52,7 @@ export default class Routes {
     protected setRoutePaths = (): RotuePaths => {
         return {
             index: "/",
+            smsTest: "/sms/test",
             getAdmin: "/admin/:id",
             getAllTrainers: "/admin/trainers/all",
             getTrainers: "/admin/trainers",
@@ -88,6 +92,12 @@ export default class Routes {
             verifyPayment: "/payment/verify",
             capturePaymentFailure: "/payment/capture-failure",
             getPaymentHistory: "/payments/:id",
+            getStudentsInClass: "/classes/students/:class_id",
+            extendDueDate: "/payments/extend/:payment_id",
+            addRemarks: "/classes/remarks",
+            getRemarks: "/classes/remarks/:class_id/:trainer_id",
+            getClassBySlug: "/class/slug/:slug",
+            markStudentAttendance: "/student/attendance",
         };
     };
 
@@ -108,6 +118,10 @@ export default class Routes {
             this.classCtrl.fetchAllClasses
         );
         this.router.get(
+            this.paths.getStudentsInClass,
+            this.classCtrl.getStudentsInClass
+        );
+        this.router.get(
             this.paths.getAssignedClasses,
             this.trainerCtrl.getAssignedClasses
         );
@@ -126,6 +140,11 @@ export default class Routes {
         this.router.get(
             this.paths.getPaymentHistory,
             this.paymentCtrl.getPaymentHistory
+        );
+        this.router.get(this.paths.getRemarks, this.classCtrl.getRemarks);
+        this.router.get(
+            this.paths.getClassBySlug,
+            this.classCtrl.getClassBySlug
         );
         this.router.get(
             this.paths.getYearlyDurations,
@@ -167,6 +186,7 @@ export default class Routes {
      * POST ROUTES
      ****************/
     protected initPostRoutes = () => {
+        this.router.post(this.paths.smsTest, this.smsCtrl.send);
         this.router.post(
             this.paths.adminRegister,
             this.validator.register(),
@@ -218,6 +238,15 @@ export default class Routes {
         this.router.post(
             this.paths.capturePaymentFailure,
             this.paymentCtrl.captureFailedPayment
+        );
+        this.router.post(
+            this.paths.extendDueDate,
+            this.paymentCtrl.extendDueDate
+        );
+        this.router.post(this.paths.addRemarks, this.classCtrl.addRemarks);
+        this.router.post(
+            this.paths.markStudentAttendance,
+            this.studentCtrl.markAttendance
         );
     };
 

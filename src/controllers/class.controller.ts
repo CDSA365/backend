@@ -3,10 +3,14 @@ import moment from "moment-timezone";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import DB from "../constructs/db";
 import {
+    add_remarks,
     create_class,
     delete_class,
     fetch_all_classes,
     fetch_classes,
+    get_class_by_slug,
+    get_remarks,
+    get_students_in_class,
     udpate_class,
     update_class_category,
     update_trainer_in_class,
@@ -65,6 +69,14 @@ export default class ClassController {
                     promises.push(
                         this.classService.assignClassToCategory(
                             req.body.category,
+                            result.insertId
+                        )
+                    );
+                }
+                if (req.body.studentCategory) {
+                    promises.push(
+                        this.classService.assignClassToStudents(
+                            req.body.studentCategory,
                             result.insertId
                         )
                     );
@@ -208,5 +220,75 @@ export default class ClassController {
                 year: moment(time).format("YYYY"),
             };
         });
+    };
+
+    public getStudentsInClass = async (req: Request, res: Response) => {
+        const { class_id } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(
+                get_students_in_class,
+                [class_id]
+            );
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public addRemarks = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<ResultSetHeader>(add_remarks, [
+                req.body,
+            ]);
+            if (result.affectedRows) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to process request");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getRemarks = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const { class_id, trainer_id } = req.params;
+            const [result] = await conn.query<RowDataPacket[]>(get_remarks, [
+                class_id,
+                trainer_id,
+            ]);
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getClassBySlug = async (req: Request, res: Response) => {
+        const { slug } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [[result]] = await conn.query<RowDataPacket[]>(
+                get_class_by_slug,
+                [slug]
+            );
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to fetch class details.");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
     };
 }

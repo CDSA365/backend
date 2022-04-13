@@ -5,24 +5,33 @@ import Razorpay from "razorpay";
 import DB from "../constructs/db";
 import {
     create_payment_history,
+    extend_due_date,
     get_payment_history,
     update_payment_history,
 } from "../queries/admin_queries";
 import crypto from "crypto";
+import SMS from "../services/sms-service";
 
 const { PAYMENT_ID, PAYMENT_SECRET } = process.env;
 
 export default class PaymentController {
     protected razorPay: any;
     protected db: DB;
+    protected sms: SMS;
 
     constructor() {
         this.db = new DB();
+        this.sms = new SMS();
         this.razorPay = new Razorpay({
             key_id: PAYMENT_ID,
             key_secret: PAYMENT_SECRET,
         });
     }
+
+    private getNextDue = (gap: number, period: any) => {
+        const nextDue = moment().add(gap, period).format();
+        return nextDue;
+    };
 
     public createOrder = async (req: Request, res: Response) => {
         const multiplier = 8999999999999999;
@@ -95,7 +104,7 @@ export default class PaymentController {
                     due: req.body.due,
                     status: req.body.status,
                     error_code: req.body.error_code,
-                    next_due: req.body.next_due,
+                    next_due: this.getNextDue(req.body.gap, req.body.period),
                 };
                 const [result] = await conn.query<ResultSetHeader>(
                     update_payment_history,
@@ -158,6 +167,38 @@ export default class PaymentController {
                 [id]
             );
             res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public extendDueDate = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        console.log(req.body);
+        const { gap, period, currentDue } = req.body;
+        const { payment_id } = req.params;
+        try {
+            const date = currentDue ? moment(currentDue) : moment();
+            const next_due = moment(date).add(gap, period).format();
+            const [result] = await conn.query<ResultSetHeader>(
+                extend_due_date,
+                [next_due, payment_id]
+            );
+            if (result.affectedRows) {
+                const message = `Hi!, Your next fee payment due date is extended ${gap} ${period} to ${moment(
+                    next_due
+                )
+                    .tz("Asia/Kolkata")
+                    .format(
+                        "LL"
+                    )}. Please pay the fee before the due date to continue taking classes.`;
+                this.sms.send(message);
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to process the request");
+            }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
         } finally {

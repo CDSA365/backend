@@ -7,18 +7,25 @@ import {
     find_student,
     get_all_students,
     get_students_classes,
+    mark_student_attendance,
     register_student,
     update_student,
 } from "../queries/admin_queries";
 import DataTransformer from "../services/data-transform-service";
+import SMS from "../services/sms-service";
+import StudentService from "../services/student-service";
 
 export default class StudentController {
     protected db: DB;
+    protected sms: SMS;
+    protected studentService: StudentService;
     protected transformer: DataTransformer;
 
     constructor() {
         this.db = new DB();
+        this.sms = new SMS();
         this.transformer = new DataTransformer();
+        this.studentService = new StudentService();
     }
 
     public registerStudent = async (req: Request, res: Response) => {
@@ -142,7 +149,9 @@ export default class StudentController {
                 [values]
             );
             if (result.affectedRows) {
-                res.status(200).json(result);
+                this.studentService
+                    .notifyStudentOnAssignedClass(list, id)
+                    .finally(() => res.status(200).json(result));
             } else {
                 res.status(422).json({
                     error: true,
@@ -166,6 +175,26 @@ export default class StudentController {
             );
             res.status(200).json(result);
         } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public markAttendance = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<ResultSetHeader>(
+                mark_student_attendance,
+                [req.body]
+            );
+            if (result.affectedRows) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to process the request");
+            }
+        } catch (error: any) {
+            console.log(error);
             res.status(500).json({ error: true, message: error.message });
         } finally {
             conn.release();

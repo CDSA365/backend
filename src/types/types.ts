@@ -36,6 +36,7 @@ export interface Constructor {
 export interface RotuePaths {
     [key: string]: string;
     index: string;
+    smsTest: string;
     getAdmin: string;
     getAllTrainers: string;
     getTrainers: string;
@@ -74,6 +75,12 @@ export interface RotuePaths {
     verifyPayment: string;
     capturePaymentFailure: string;
     getPaymentHistory: string;
+    getStudentsInClass: string;
+    extendDueDate: string;
+    addRemarks: string;
+    getRemarks: string;
+    getClassBySlug: string;
+    markStudentAttendance: string;
 }
 
 export interface TransportInfo {
