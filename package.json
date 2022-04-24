@@ -5,10 +5,10 @@
     "main": "server.ts",
     "scripts": {
         "dev": "env-cmd -e dev nodemon ./server.ts",
-        "start": "env-cmd -e dev node ./dist/server.js",
+        "start": "env-cmd -e prod node ./dist/server.js",
         "pm2": "tsc && pm2 start process.json",
         "pm2:restart": "tsc && pm2 restart process.json",
-        "build": "env-cmd -e dev tsc"
+        "build": "env-cmd -e prod tsc"
     },
     "repository": {
         "type": "git",

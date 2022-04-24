@@ -4,6 +4,7 @@ import AuthController from "../controllers/auth.controller";
 import ClassController from "../controllers/class.controller";
 import CommonController from "../controllers/common.controller";
 import IndexController from "../controllers/index.controller";
+import LeadsController from "../controllers/leads.controller";
 import PaymentController from "../controllers/payment.controller";
 import SMSController from "../controllers/sms.controller";
 import StudentController from "../controllers/student.controller";
@@ -23,6 +24,7 @@ export default class Routes {
     protected classCtrl: ClassController;
     protected studentCtrl: StudentController;
     protected paymentCtrl: PaymentController;
+    protected leadsCtrl: LeadsController;
     protected paths: RotuePaths;
 
     constructor() {
@@ -37,6 +39,7 @@ export default class Routes {
         this.classCtrl = new ClassController();
         this.studentCtrl = new StudentController();
         this.paymentCtrl = new PaymentController();
+        this.leadsCtrl = new LeadsController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -97,7 +100,12 @@ export default class Routes {
             addRemarks: "/classes/remarks",
             getRemarks: "/classes/remarks/:class_id/:trainer_id",
             getClassBySlug: "/class/slug/:slug",
+            getClassById: "/class/:class_id",
             markStudentAttendance: "/student/attendance",
+            fetchRemarksForAdmin: "/classes/remarks/:class_id",
+            addLeads: "/leads/add",
+            getLeads: "/leads",
+            attendanceReport: "/student/attendance/report",
         };
     };
 
@@ -146,6 +154,12 @@ export default class Routes {
             this.paths.getClassBySlug,
             this.classCtrl.getClassBySlug
         );
+        this.router.get(
+            this.paths.fetchRemarksForAdmin,
+            this.classCtrl.fetchRemarksForAdmin
+        );
+        this.router.get(this.paths.getLeads, this.leadsCtrl.getLeads);
+        this.router.get(this.paths.getClassById, this.classCtrl.getClassById);
         this.router.get(
             this.paths.getYearlyDurations,
             this.trainerCtrl.getYearlyDurations
@@ -247,6 +261,11 @@ export default class Routes {
         this.router.post(
             this.paths.markStudentAttendance,
             this.studentCtrl.markAttendance
+        );
+        this.router.post(this.paths.addLeads, this.leadsCtrl.addLead);
+        this.router.post(
+            this.paths.attendanceReport,
+            this.studentCtrl.getAttendanceReport
         );
     };
 

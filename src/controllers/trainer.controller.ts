@@ -322,6 +322,7 @@ export default class TrainerController {
 
     public udpateTrainerLog = async (req: Request, res: Response) => {
         const { trainer_id, class_id } = req.params;
+        console.log(trainer_id, class_id);
         this.db
             .getConnection()
             .then((conn) => {

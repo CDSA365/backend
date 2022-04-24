@@ -4,7 +4,7 @@ import cors from "cors";
 import App from "./app";
 
 const { PORT } = process.env;
-const port = Number(PORT);
+const port = Number(PORT) || 4000;
 
 const bodyParserUrl = bodyParser.urlencoded({ extended: false });
 const bodyParserJson = bodyParser.json();

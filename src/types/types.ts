@@ -80,7 +80,12 @@ export interface RotuePaths {
     addRemarks: string;
     getRemarks: string;
     getClassBySlug: string;
+    getClassById: string;
     markStudentAttendance: string;
+    fetchRemarksForAdmin: string;
+    addLeads: string;
+    getLeads: string;
+    attendanceReport: string;
 }
 
 export interface TransportInfo {

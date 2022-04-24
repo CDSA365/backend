@@ -7,6 +7,7 @@ import {
     find_student,
     get_all_students,
     get_students_classes,
+    get_student_attendance_report,
     mark_student_attendance,
     register_student,
     update_student,
@@ -196,6 +197,24 @@ export default class StudentController {
         } catch (error: any) {
             console.log(error);
             res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getAttendanceReport = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        const { year, month } = req.body;
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(
+                get_student_attendance_report,
+                [year, month]
+            );
+            const transformedResult =
+                this.studentService.transformAttendanceResult(result);
+            res.status(200).json(transformedResult);
+        } catch (error: any) {
+            res.status(500).json({ error: true, ...error });
         } finally {
             conn.release();
         }

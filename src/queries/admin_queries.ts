@@ -57,4 +57,17 @@ export const add_remarks = `insert into class_remarks set ?`;
 export const get_remarks = `select * from class_remarks where class_id = ? and trainer_id = ? order by created_at desc`;
 export const get_class_by_slug = `select c.*, t.id as trainer_id, concat(t.first_name, " ", t.last_name) as trainer_name from classes c inner join trainer_in_classes tic on tic.class_id = c.id left join trainers t on t.id = tic.trainer_id where c.slug = ?`;
 export const get_class_by_id = `select * from classes where id = ?`;
-export const mark_student_attendance = `insert into student_class_attendance set ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), class_id = values(class_id), attendance = values(attendance)`;
+export const mark_student_attendance = `insert into student_class_attendance set ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), class_id = values(class_id), attendance = values(attendance), year = values(year), month = values(month), week = values(week), date = values(date)`;
+export const get_remarks_for_admin = `select * from class_remarks where class_id = ? order by created_at desc`;
+export const add_leads = `insert into leads set ?`;
+export const get_leads = `select * from leads group by phone order by created_at desc;`;
+export const get_counts_report = `SELECT (SELECT COUNT(*) FROM students) as all_students, (SELECT COUNT(*) FROM students where status = 1) as active_students, (SELECT COUNT(*) FROM classes) as all_classes, (SELECT COUNT(*) FROM classes where status = 1) as active_classes, (SELECT COUNT(*) FROM classes where progress_state = 'SCHEDULED') as scheduled_classes, (SELECT COUNT(*) FROM classes where progress_state = 'IN PROGRESS') as in_progress_classes, (SELECT COUNT(*) FROM classes where progress_state = 'COMPLETED') as completed_classes, (SELECT COUNT(*) FROM trainers) as trainers, (SELECT COUNT(*) FROM trainers where status = 1) as active_trainers;`;
+export const get_student_attendance_report = `select s.id, concat(s.first_name, " ", s.last_name) as student_name, 
+concat(t.first_name, " ", t.last_name) as trainer_name, c.title,
+sca.year, sca.month, sca.week, sca.date, sca.attendance from students s
+join student_in_classes sic on sic.student_id = s.id
+join classes c on c.id = sic.class_id
+join trainer_in_classes tic on tic.class_id = c.id
+join trainers t on t.id = tic.trainer_id
+left join student_class_attendance sca on (sca.student_id = s.id and sca.class_id = c.id)
+where sca.year = ? and sca.month = ?`;

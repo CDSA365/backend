@@ -8,8 +8,10 @@ import {
     delete_class,
     fetch_all_classes,
     fetch_classes,
+    get_class_by_id,
     get_class_by_slug,
     get_remarks,
+    get_remarks_for_admin,
     get_students_in_class,
     udpate_class,
     update_class_category,
@@ -289,6 +291,40 @@ export default class ClassController {
             res.status(500).json({ error: true, message: error.message });
         } finally {
             conn.release();
+        }
+    };
+
+    public getClassById = async (req: Request, res: Response) => {
+        const { class_id } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [[result]] = await conn.query<RowDataPacket[]>(
+                get_class_by_id,
+                [class_id]
+            );
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to fetch class details.");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public fetchRemarksForAdmin = async (req: Request, res: Response) => {
+        const { class_id } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(
+                get_remarks_for_admin,
+                [class_id]
+            );
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
         }
     };
 }

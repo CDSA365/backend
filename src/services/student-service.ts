@@ -67,4 +67,19 @@ export default class StudentService {
             }
         });
     };
+
+    public transformAttendanceResult = (result: any[]) => {
+        let groups = ["student_name", "title"];
+        return result.reduce((r, o) => {
+            groups
+                .reduce(
+                    (group, key, i, { length }) =>
+                        (group[o[key]] =
+                            group[o[key]] || (i + 1 === length ? [] : {})),
+                    r
+                )
+                .push(o);
+            return r;
+        }, {});
+    };
 }
