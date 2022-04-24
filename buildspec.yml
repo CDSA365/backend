@@ -13,6 +13,7 @@ phases:
         commands:
             - echo Removing unnecessary files...
             - rm -rf node_modules/
+            - node ./dist/server.js
 artifacts:
     base-directory: "."
     files:
