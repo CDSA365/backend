@@ -2,7 +2,7 @@
     "name": "cdsa365-backend",
     "version": "1.0.0",
     "description": "",
-    "main": "server.ts",
+    "main": "server.js",
     "scripts": {
         "dev": "env-cmd -e dev nodemon server.ts",
         "start": "env-cmd -e prod node dist/server.js",
