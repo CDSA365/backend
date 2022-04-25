@@ -1,5 +1,5 @@
 import express, { Application } from "express";
-import Routes from "./src/routes/routes";
+import Routes from "../src/routes/routes";
 
 const { API_VERSION } = process.env;
 
