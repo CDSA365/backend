@@ -14,7 +14,7 @@ phases:
         commands:
             - echo Build started on `date`
             - npm run build
-            - npm prune --production
+            - zip -r deploy.zip * -x ./node_modules
     post_build:
         commands:
             - echo Build completed on `date`
