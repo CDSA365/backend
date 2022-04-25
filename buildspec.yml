@@ -3,22 +3,24 @@ version: 0.2
 phases:
     install:
         runtime-versions:
-            nodejs: 12
+            nodejs: 10
         commands:
             - npm install -g typescript
-            - npm install
     pre_build:
         commands:
-            - echo nothing to do in the pre_build phase...
+            - echo Installing source NPM dependencies...
+            - npm install
     build:
         commands:
-            - echo Create build...
+            - echo Build started on `date`
             - npm run build
+            - npm prune --production
     post_build:
         commands:
-            - echo Removing unnecessary files...
-            - rm -rf node_modules/
+            - echo Build completed on `date`
 artifacts:
     files:
-        - "**/*"
-    name: cdsa365build-$(date +%Y-%m-%d)
+        - dist/**/*
+        - package.json
+        - package-lock.json
+        - node_modules/**/*

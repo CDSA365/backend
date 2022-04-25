@@ -2,13 +2,13 @@
     "name": "cdsa365-backend",
     "version": "1.0.0",
     "description": "",
-    "main": "server.js",
+    "main": "dist/server.js",
     "scripts": {
-        "dev": "env-cmd -e dev nodemon server.ts",
-        "start": "env-cmd -e prod node dist/server.js",
-        "pm2": "tsc && pm2 start process.json",
-        "pm2:restart": "tsc && pm2 restart process.json",
-        "build": "tsc && cp .env-cmdrc ./dist/.env-cmdrc"
+        "build": "node ./util/build.js",
+        "release": "release-it",
+        "start": "node dist/server.js",
+        "dev": "nodemon --config \"./util/nodemon.json\"/",
+        "test": "mocha -r ts-node/register src/test**/*.ts"
     },
     "repository": {
         "type": "git",
@@ -23,6 +23,7 @@
     "dependencies": {
         "body-parser": "^1.19.2",
         "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
         "dotenv": "^16.0.0",
         "dotenv-flow": "^3.2.0",
         "env-cmd": "^10.1.0",
@@ -54,6 +55,7 @@
         "@types/qrcode": "^1.4.2",
         "@types/shortid": "^0.0.29",
         "@types/speakeasy": "^2.0.7",
-        "ts-node": "^10.7.0"
+        "ts-node": "^10.7.0",
+        "tsconfig-paths": "^3.14.1"
     }
 }
