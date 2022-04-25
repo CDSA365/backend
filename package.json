@@ -6,7 +6,7 @@
     "scripts": {
         "build": "node ./util/build.js",
         "release": "release-it",
-        "start": "node dist/server.js",
+        "start": "node server.ts",
         "dev": "nodemon --config \"./util/nodemon.json\"/",
         "test": "mocha -r ts-node/register src/test**/*.ts"
     },
