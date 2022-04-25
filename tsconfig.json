@@ -7,14 +7,14 @@
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": false,
-        "outDir": "dist",
-        "rootDir": "src",
+        "outDir": "./dist",
+        "rootDir": ".",
         "paths": {
             "@shared": ["shared"]
         },
         "types": ["node"],
         "typeRoots": ["node_modules/@types"]
     },
-    "include": ["src/**/*", "env/**/*"],
+    "include": ["**/*"],
     "exclude": ["src/test/**"]
 }
