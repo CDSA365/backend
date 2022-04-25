@@ -6,7 +6,7 @@ try {
     fs.removeSync("/dist");
 
     // Copy front-end files
-    fs.copySync("./src/public", "./dist/public");
+    // fs.copySync("./src/public", "./dist/public");
 
     // Transpile the typescript files
     childProcess.exec("tsc --build tsconfig.json");
