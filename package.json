@@ -4,10 +4,10 @@
     "description": "",
     "main": "dist/server.js",
     "scripts": {
-        "build": "tsc && cp *.env dist/",
+        "build": "tsc && cp *.env dist/ && cp .env-cmdrc dist/",
         "release": "release-it",
-        "start": "node dist/server.js",
-        "dev": "cross-env NODE_ENV=dev nodemon server.ts",
+        "start": "env-cmd -e prod node dist/server.js",
+        "dev": "env-cmd -e dev nodemon server.ts",
         "test": "mocha -r ts-node/register src/test**/*.ts"
     },
     "repository": {
