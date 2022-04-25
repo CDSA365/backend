@@ -4,8 +4,8 @@
     "description": "",
     "main": "server.ts",
     "scripts": {
-        "dev": "env-cmd -e dev nodemon ./server.ts",
-        "start": "env-cmd -e prod node ./dist/server.js",
+        "dev": "env-cmd -e dev nodemon server.ts",
+        "start": "env-cmd -e prod node dist/server.js",
         "pm2": "tsc && pm2 start process.json",
         "pm2:restart": "tsc && pm2 restart process.json",
         "build": "env-cmd -e prod tsc"

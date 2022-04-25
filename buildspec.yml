@@ -1,10 +1,15 @@
 version: 0.2
 
 phases:
+    install:
+        runtime-versions:
+            nodejs: 16
+        commands:
+            - npm install -g typescript
+            - npm install
     pre_build:
         commands:
-            - echo Install packages...
-            - npm install
+            - echo nothing to do in the pre_build phase...
     build:
         commands:
             - echo Create build...
@@ -14,10 +19,6 @@ phases:
             - echo Removing unnecessary files...
             - rm -rf node_modules/
 artifacts:
-    base-directory: "."
     files:
-        - server.js
-        - dist/**/*
-        - package.json
-        - request-map.js
-        - node_modules/**/*
+        - "**/*"
+    name: cdsa365build-$(date +%Y-%m-%d)
