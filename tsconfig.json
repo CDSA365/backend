@@ -15,6 +15,6 @@
         "types": ["node"],
         "typeRoots": ["node_modules/@types"]
     },
-    "include": ["**/*"],
+    "include": ["**/*", "./*.env"],
     "exclude": ["src/test/**"]
 }

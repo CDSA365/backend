@@ -1,9 +1,8 @@
 let dotenv = require("dotenv");
 
-// Set default to "development"
-const nodeEnv = process.env.ENV_FILE || "dev";
+const nodeEnv = process.env.NODE_ENV || "dev";
 const result = dotenv.config({
-    path: `./env/${nodeEnv}.env`,
+    path: `./${nodeEnv}.env`,
 });
 
 if (result.error) {

@@ -1,4 +1,4 @@
-// import "./src/constructs/env";
+import "./src/constructs/env";
 import bodyParser from "body-parser";
 import cors from "cors";
 import App from "./app";
