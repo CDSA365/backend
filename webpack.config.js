@@ -3,13 +3,17 @@
 const path = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
+const nodeExternals = require("webpack-node-externals");
 const { DotenvCmdWebpack } = require("dotenv-cmd-webpack");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const isProduction = process.env.NODE_ENV == "production";
+const dstPath = path.join(__dirname, "dist");
 
 const config = {
     entry: "./src/server.ts",
     target: "node",
+    externals: [nodeExternals()],
     node: {
         __dirname: false,
         __filename: false,
@@ -26,7 +30,19 @@ const config = {
         new NodePolyfillPlugin(),
         new DotenvCmdWebpack({
             filePath: ".env-cmdrc.json",
-            env: "production",
+            env: isProduction ? "production" : "development",
+        }),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.join(__dirname, "package.json"),
+                    to: `${dstPath}/package.json`,
+                },
+                {
+                    from: path.join(__dirname, "README.md"),
+                    to: `${dstPath}/README.md`,
+                },
+            ],
         }),
     ],
     module: {
@@ -46,7 +62,7 @@ const config = {
         extensions: [".tsx", ".ts", ".js"],
         fallback: {
             util: require.resolve("util/"),
-            fs: false,
+            // fs: false,
             tls: false,
             net: false,
             dns: false,
