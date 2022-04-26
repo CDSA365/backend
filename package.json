@@ -6,7 +6,7 @@
     "scripts": {
         "build": "webpack --mode=production --node-env=production",
         "release": "release-it",
-        "start": "env-cmd -e prod node dist/server.js",
+        "start": "node dist/server.js",
         "dev": "env-cmd -e dev nodemon ./src/server.ts",
         "test": "mocha -r ts-node/register src/test**/*.ts",
         "build:dev": "webpack --mode=development",
