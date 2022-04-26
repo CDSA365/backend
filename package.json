@@ -1,14 +1,18 @@
 {
-    "name": "cdsa365-backend",
+    "name": "my-webpack-project",
     "version": "1.0.0",
-    "description": "",
+    "description": "My webpack project",
     "main": "dist/server.js",
     "scripts": {
-        "build": "tsc && cp *.env dist/ && cp .env-cmdrc dist/",
+        "build": "webpack --mode=production --node-env=production",
         "release": "release-it",
         "start": "env-cmd -e prod node dist/server.js",
-        "dev": "env-cmd -e dev nodemon server.ts",
-        "test": "mocha -r ts-node/register src/test**/*.ts"
+        "dev": "env-cmd -e dev nodemon ./src/server.ts",
+        "test": "mocha -r ts-node/register src/test**/*.ts",
+        "build:dev": "webpack --mode=development",
+        "build:prod": "webpack --mode=production --node-env=production",
+        "watch": "webpack --watch",
+        "serve": "webpack serve"
     },
     "repository": {
         "type": "git",
@@ -43,7 +47,7 @@
         "shortid": "^2.2.16",
         "speakeasy": "^2.0.0",
         "twilio": "^3.76.1",
-        "typescript": "^4.6.2"
+        "util": "^0.12.4"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",
@@ -52,11 +56,24 @@
         "@types/jsonwebtoken": "^8.5.8",
         "@types/md5": "^2.3.2",
         "@types/mjml": "^4.7.0",
+        "@types/node": "^17.0.27",
         "@types/nodemailer": "^6.4.4",
         "@types/qrcode": "^1.4.2",
         "@types/shortid": "^0.0.29",
         "@types/speakeasy": "^2.0.7",
+        "@types/webpack": "^5.28.0",
+        "@webpack-cli/generators": "^2.4.2",
+        "clean-webpack-plugin": "^4.0.0",
+        "copy-webpack-plugin": "^10.2.4",
+        "declaration-bundler-webpack-plugin": "^1.0.3",
+        "html-webpack-plugin": "^5.5.0",
+        "node-polyfill-webpack-plugin": "^1.1.4",
+        "ts-loader": "^9.2.8",
         "ts-node": "^10.7.0",
-        "tsconfig-paths": "^3.14.1"
+        "tsconfig-paths": "^3.14.1",
+        "typescript": "^4.6.3",
+        "webpack": "^5.72.0",
+        "webpack-cli": "^4.9.2",
+        "workbox-webpack-plugin": "^6.5.3"
     }
 }
