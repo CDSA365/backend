@@ -3,11 +3,17 @@
 const path = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
+const { DotenvCmdWebpack } = require("dotenv-cmd-webpack");
 
 const isProduction = process.env.NODE_ENV == "production";
 
 const config = {
     entry: "./src/server.ts",
+    target: "node",
+    node: {
+        __dirname: false,
+        __filename: false,
+    },
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "server.js",
@@ -18,8 +24,10 @@ const config = {
     },
     plugins: [
         new NodePolyfillPlugin(),
-        // Add your plugins here
-        // Learn more about plugins from https://webpack.js.org/configuration/plugins/
+        new DotenvCmdWebpack({
+            filePath: ".env-cmdrc.json",
+            env: "production",
+        }),
     ],
     module: {
         rules: [
@@ -32,9 +40,6 @@ const config = {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: "asset",
             },
-
-            // Add your rules for custom modules here
-            // Learn more about loaders from https://webpack.js.org/loaders/
         ],
     },
     resolve: {

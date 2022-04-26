@@ -4,10 +4,10 @@
     "description": "My webpack project",
     "main": "dist/server.js",
     "scripts": {
-        "build": "webpack --mode=production --node-env=production",
+        "build": "rm -rf dist && env-cmd -e production webpack --mode=production --node-env=production",
         "release": "release-it",
         "start": "node dist/server.js",
-        "dev": "env-cmd -e dev nodemon ./src/server.ts",
+        "dev": "env-cmd -e development nodemon ./src/server.ts",
         "test": "mocha -r ts-node/register src/test**/*.ts",
         "build:dev": "webpack --mode=development",
         "build:prod": "webpack --mode=production --node-env=production",
@@ -29,6 +29,7 @@
         "cors": "^2.8.5",
         "cross-env": "^7.0.3",
         "dotenv": "^16.0.0",
+        "dotenv-cmd-webpack": "^2.1.0",
         "dotenv-flow": "^3.2.0",
         "env-cmd": "^10.1.0",
         "express": "^4.17.3",
@@ -47,7 +48,8 @@
         "shortid": "^2.2.16",
         "speakeasy": "^2.0.0",
         "twilio": "^3.76.1",
-        "util": "^0.12.4"
+        "util": "^0.12.4",
+        "webpack-node-externals": "^3.0.0"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",
