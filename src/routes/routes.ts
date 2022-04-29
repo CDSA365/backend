@@ -9,6 +9,7 @@ import PaymentController from "../controllers/payment.controller";
 import SMSController from "../controllers/sms.controller";
 import StudentController from "../controllers/student.controller";
 import TrainerController from "../controllers/trainer.controller";
+import DashController from "../controllers/dash-controller";
 import Validator from "../middlewares/validator";
 import { RotuePaths } from "../types/types";
 
@@ -25,6 +26,7 @@ export default class Routes {
     protected studentCtrl: StudentController;
     protected paymentCtrl: PaymentController;
     protected leadsCtrl: LeadsController;
+    protected dashCtrl: DashController;
     protected paths: RotuePaths;
 
     constructor() {
@@ -40,6 +42,7 @@ export default class Routes {
         this.studentCtrl = new StudentController();
         this.paymentCtrl = new PaymentController();
         this.leadsCtrl = new LeadsController();
+        this.dashCtrl = new DashController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -106,6 +109,7 @@ export default class Routes {
             addLeads: "/leads/add",
             getLeads: "/leads",
             attendanceReport: "/student/attendance/report",
+            getCountReport: "/report/count-report",
         };
     };
 
@@ -114,6 +118,7 @@ export default class Routes {
      ******************/
     protected initGetRoutes = () => {
         this.router.get(this.paths.index, this.indexCtrl.index);
+        this.router.get(this.paths.getCountReport, this.dashCtrl.getCounts);
         this.router.get(
             this.paths.getAllTrainers,
             this.trainerCtrl.fetchAllTrainers
