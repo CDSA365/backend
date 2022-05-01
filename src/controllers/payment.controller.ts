@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import moment from "moment-timezone";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import Razorpay from "razorpay";
@@ -7,10 +7,14 @@ import {
     create_payment_history,
     extend_due_date,
     get_payment_history,
+    get_payment_history_by_email,
+    get_payment_history_by_id,
+    get_payment_history_by_phone,
     update_payment_history,
 } from "../queries/admin_queries";
 import crypto from "crypto";
 import SMS from "../services/sms-service";
+import { generateReceipt } from "../helpers/helpers";
 
 const { PAYMENT_ID, PAYMENT_SECRET } = process.env;
 
@@ -34,12 +38,10 @@ export default class PaymentController {
     };
 
     public createOrder = async (req: Request, res: Response) => {
-        const multiplier = 8999999999999999;
-        const roundOff = 1000000000000000;
         const options = {
             amount: req.body.amount * 100,
             currency: "INR",
-            receipt: String(Math.floor(Math.random() * multiplier + roundOff)),
+            receipt: generateReceipt(),
         };
         this.razorPay.orders.create(options, async (err: any, order: any) => {
             if (err) {
@@ -86,6 +88,40 @@ export default class PaymentController {
                 }
             }
         });
+    };
+
+    public createManualPaymentOrder = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const value = {
+                student_id: req.body.student_id,
+                receipt_id: generateReceipt(),
+                amount: req.body.amount,
+                paid: req.body.paid,
+                due: req.body.due,
+                currency: "INT",
+                status: "paid",
+                notes: "Captured Manually",
+                order_created_at: moment().format(),
+                next_due: this.getNextDue(req.body.gap, req.body.period),
+            };
+            const [result] = await conn.query<ResultSetHeader>(
+                create_payment_history,
+                [value]
+            );
+            if (result.affectedRows) {
+                res.status(200).json(value);
+            } else {
+                throw new Error("Unable to create payment order");
+            }
+        } catch (error: any) {
+            res.status(500).json({
+                error: true,
+                ...error,
+            });
+        } finally {
+            conn.release();
+        }
     };
 
     public verifyPayment = async (req: Request, res: Response) => {
@@ -169,6 +205,61 @@ export default class PaymentController {
             res.status(200).json(result);
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getPaymentHistoryforManualCapture = async (
+        req: Request,
+        res: Response
+    ) => {
+        const { entity, key } = req.params;
+        const conn = await this.db.getConnection();
+        let query = "";
+        switch (key) {
+            case "student_id":
+                query = get_payment_history_by_id;
+                break;
+            case "student_email":
+                query = get_payment_history_by_email;
+                break;
+            case "student_phone":
+                query = get_payment_history_by_phone;
+                break;
+            default:
+                break;
+        }
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(query, [entity]);
+            if (result.length) {
+                const response: any = {};
+                const paymentData: any[] = [];
+                result.map((r) => {
+                    paymentData.push({
+                        receipt: r.receipt_id,
+                        amount: r.amount / 100,
+                        paid: r.paid / 100,
+                        due: r.due / 100,
+                        next_due: r.next_due,
+                        status: r.status,
+                        paid_on: r.updated_at,
+                    });
+                    response["id"] = r.student_id;
+                    response["name"] = r.first_name + " " + r.last_name;
+                    response["email"] = r.email;
+                    response["phone"] = r.phone;
+                    response["fee"] = r.fee;
+                    response["gap"] = r.gap;
+                    response["period"] = r.period;
+                    response["payment_data"] = paymentData;
+                });
+                res.status(200).json(response);
+            } else {
+                throw new Error("No payment data found");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, ...error });
         } finally {
             conn.release();
         }

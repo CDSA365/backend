@@ -71,3 +71,6 @@ join trainer_in_classes tic on tic.class_id = c.id
 join trainers t on t.id = tic.trainer_id
 left join student_class_attendance sca on (sca.student_id = s.id and sca.class_id = c.id)
 where sca.year = ? and sca.month = ?`;
+export const get_payment_history_by_id = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.id = ? and sph.status != 'created' order by sph.updated_at desc;`;
+export const get_payment_history_by_email = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.email = ? and sph.status != 'created' order by sph.updated_at desc;`;
+export const get_payment_history_by_phone = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.phone = ? and sph.status != 'created' order by sph.updated_at desc;`;

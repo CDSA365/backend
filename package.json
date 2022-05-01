@@ -7,7 +7,7 @@
         "build": "rm -rf dist && env-cmd -e production webpack --mode=production --node-env=production",
         "release": "release-it",
         "start": "node dist/server.js",
-        "dev": "env-cmd -e development nodemon dist/server.js",
+        "dev": "env-cmd -e development nodemon src/server.ts",
         "test": "mocha -r ts-node/register src/test**/*.ts",
         "build:dev": "rm -rf dist && env-cmd -e development webpack --mode=development --node-env=development",
         "build:prod": "webpack --mode=production --node-env=production",
@@ -25,6 +25,7 @@
     },
     "homepage": "https://github.com/samnsimson/cdsa365-backend#readme",
     "dependencies": {
+        "@sendgrid/mail": "^7.6.2",
         "body-parser": "^1.19.2",
         "cors": "^2.8.5",
         "cross-env": "^7.0.3",

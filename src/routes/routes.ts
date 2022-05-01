@@ -110,6 +110,8 @@ export default class Routes {
             getLeads: "/leads",
             attendanceReport: "/student/attendance/report",
             getCountReport: "/report/count-report",
+            getPaymentDataForManualEntry: "/payments/make-entry/:key/:entity",
+            createManualPaymentOrder: "/payment/create-manual-order",
         };
     };
 
@@ -165,6 +167,10 @@ export default class Routes {
         );
         this.router.get(this.paths.getLeads, this.leadsCtrl.getLeads);
         this.router.get(this.paths.getClassById, this.classCtrl.getClassById);
+        this.router.get(
+            this.paths.getPaymentDataForManualEntry,
+            this.paymentCtrl.getPaymentHistoryforManualCapture
+        );
         this.router.get(
             this.paths.getYearlyDurations,
             this.trainerCtrl.getYearlyDurations
@@ -271,6 +277,10 @@ export default class Routes {
         this.router.post(
             this.paths.attendanceReport,
             this.studentCtrl.getAttendanceReport
+        );
+        this.router.post(
+            this.paths.createManualPaymentOrder,
+            this.paymentCtrl.createManualPaymentOrder
         );
     };
 

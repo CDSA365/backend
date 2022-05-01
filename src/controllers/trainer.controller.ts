@@ -21,7 +21,7 @@ import {
     update_trainer_time_log,
 } from "../queries/admin_queries";
 import DataTransformer from "../services/data-transform-service";
-import EmailService from "../services/email-service";
+import EmailService from "../services/mail-service";
 import Token from "../services/token-service";
 import { InvitationEmailContext, TransportInfo } from "../types/types";
 import crypto from "crypto";
@@ -162,17 +162,14 @@ export default class TrainerController {
                         token: trainer.auth_token,
                     };
                     const token = this.token.get(tokenPayload);
-                    const info: TransportInfo = {
-                        to: trainer.email,
+                    const info: any = {
+                        from: "info@cdsa365.com",
+                        to: "samnsimson@gmail.com",
                         subject: "Invitation to join Carpe Diem Skills Academy",
+                        text: "test",
+                        html: "test",
                     };
-                    const context: InvitationEmailContext = {
-                        first_name: trainer.first_name,
-                        last_name: trainer.last_name,
-                        url: `${TRAINER_PORTAL}/invite/${token}`,
-                        token,
-                    };
-                    return this.emailService.sendInvitationMail(info, context);
+                    return this.emailService.send(info);
                 });
                 const resp = await Promise.allSettled(promises);
                 const statusPromises = resp.map((res: any) => {

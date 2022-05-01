@@ -87,6 +87,8 @@ export interface RotuePaths {
     getLeads: string;
     attendanceReport: string;
     getCountReport: string;
+    getPaymentDataForManualEntry: string;
+    createManualPaymentOrder: string;
 }
 
 export interface TransportInfo {
