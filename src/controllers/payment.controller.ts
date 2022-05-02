@@ -259,7 +259,7 @@ export default class PaymentController {
                 throw new Error("No payment data found");
             }
         } catch (error: any) {
-            res.status(500).json({ error: true, ...error });
+            res.status(500).json({ error: true, message: error.message });
         } finally {
             conn.release();
         }

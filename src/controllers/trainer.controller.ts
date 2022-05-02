@@ -162,12 +162,15 @@ export default class TrainerController {
                         token: trainer.auth_token,
                     };
                     const token = this.token.get(tokenPayload);
+                    const url = `${TRAINER_PORTAL}/admin/email/verify/${token}`;
+                    const text = `Please click the link or copy paste the link in a browser to join CDSA 365. ${url}`;
+                    const html = `<p>Please click the link or copy paste the link in a browser to join CDSA 365. <a href='${url}'>${url}</a></p>`;
                     const info: any = {
                         from: "info@cdsa365.com",
-                        to: "samnsimson@gmail.com",
+                        to: trainer.email,
                         subject: "Invitation to join Carpe Diem Skills Academy",
-                        text: "test",
-                        html: "test",
+                        text: text,
+                        html: html,
                     };
                     return this.emailService.send(info);
                 });
