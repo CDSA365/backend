@@ -23,7 +23,11 @@ import {
 import DataTransformer from "../services/data-transform-service";
 import EmailService from "../services/mail-service";
 import Token from "../services/token-service";
-import { InvitationEmailContext, TransportInfo } from "../types/types";
+import {
+    EmailBody,
+    InvitationEmailContext,
+    TransportInfo,
+} from "../types/types";
 import crypto from "crypto";
 import { months } from "../constants/constant";
 
@@ -166,7 +170,7 @@ export default class TrainerController {
                     const content = `Please click the link or copy paste the link in a browser to join CDSA 365.`;
                     const text = `${content} ${url}`;
                     const html = `<p>${content} <a href='${url}'>${url}</a></p>`;
-                    const info: any = {
+                    const info: EmailBody = {
                         from: String(SENDER_EMAIL),
                         to: trainer.email,
                         subject: "Invitation to join Carpe Diem Skills Academy",

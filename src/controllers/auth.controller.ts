@@ -21,11 +21,12 @@ import {
 } from "../types/types";
 import speakeasy, { GenerateSecretOptions } from "speakeasy";
 import * as QRCode from "qrcode";
-import EmailService from "../services/email-service";
+import EmailService from "../services/mail-service";
 import Token from "../services/token-service";
 import DataTransformer from "../services/data-transform-service";
 import moment from "moment";
 
+const { ADMIN_PORTAL, SENDER_EMAIL } = process.env;
 export default class AuthController {
     protected emailService: EmailService;
     protected transformer: DataTransformer;
@@ -158,17 +159,16 @@ export default class AuthController {
     ) => {
         const payload = { id, email: user.email, secret };
         const token = this.token.get(payload, 60 * 5);
-        const info: TransportInfo = { to: user.email };
-        const context: VerificationEmailContext = {
-            id: id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            token: token,
-            url: `http://localhost:3000/email/verify/${token}`,
-        };
+        const link = `${ADMIN_PORTAL}/email/verify/${token}`;
+        const body = `Please click the link or copy paste the link in a browser to verify your email.`;
         return this.emailService
-            .sendVerificationEmail(info, context)
+            .send({
+                from: String(SENDER_EMAIL),
+                to: user.email,
+                subject: "Verify email for CDSA 365",
+                text: `${body} ${link}`,
+                html: `<p>${body} <a href='${link}'>${link}</a></p>`,
+            })
             .then((result) => result)
             .catch((err) => {
                 throw new Error(err);

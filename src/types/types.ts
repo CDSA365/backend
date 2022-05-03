@@ -132,3 +132,11 @@ export interface PromiseRejectedResult {
 export type PromiseSettledResult<T> =
     | PromiseFulfilledResult<T>
     | PromiseRejectedResult;
+
+export interface EmailBody {
+    from: string;
+    to: string;
+    subject: string;
+    text: string;
+    html: string;
+}

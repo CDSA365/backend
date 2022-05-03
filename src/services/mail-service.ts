@@ -1,6 +1,7 @@
 import Email from "@sendgrid/mail";
 import { SSM } from "aws-sdk";
 import { getFromSSM } from "../helpers/helpers";
+import { EmailBody } from "../types/types";
 
 const { EMAIL_API_KEY } = process.env;
 export default class EmailService {
@@ -12,7 +13,7 @@ export default class EmailService {
         this.apikey.then((key: string) => Email.setApiKey(key));
     }
 
-    public send = async (message: any) => {
+    public send = async (message: EmailBody) => {
         return new Promise(async (resolve, reject) => {
             try {
                 await Email.send(message);
