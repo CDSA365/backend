@@ -23,7 +23,7 @@ export const generateReceipt = () => {
     return String(Math.floor(Math.random() * multiplier + roundOff));
 };
 
-export const getFromSSM = (key: string) => {
+export const getFromSSM = (key: string): Promise<string | undefined> => {
     const ssm = new SSM({ region: "ap-south-1" });
     return new Promise((resolve, reject) => {
         ssm.getParameter({ Name: key }, (err, data) => {
