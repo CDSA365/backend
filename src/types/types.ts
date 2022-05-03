@@ -89,6 +89,10 @@ export interface RotuePaths {
     getCountReport: string;
     getPaymentDataForManualEntry: string;
     createManualPaymentOrder: string;
+    createAnnouncement: string;
+    fetchAnnouncement: string;
+    deleteAnnouncement: string;
+    findAnnouncement: string;
 }
 
 export interface TransportInfo {

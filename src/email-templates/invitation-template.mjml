@@ -28,22 +28,6 @@
             background-color="#040B4F"
             padding-bottom="0"
         >
-            <mj-column width="100%">
-                <mj-image
-                    src="https://res.cloudinary.com/dheck1ubc/image/upload/v1544153577/Email/Images/AnnouncementOffset/crofts-white.png"
-                    alt=""
-                    align="center"
-                    width="150px"
-                    padding-bottom="30px"
-                />
-                <mj-image
-                    src="https://res.cloudinary.com/dheck1ubc/image/upload/v1544156968/Email/Images/AnnouncementOffset/header-top.png"
-                    width="600px"
-                    alt=""
-                    padding="0"
-                    href="https://google.com"
-                />
-            </mj-column>
         </mj-section>
         <mj-wrapper padding-top="0" padding-bottom="0" css-class="body-section">
             <mj-section
@@ -58,7 +42,7 @@
                         font-size="20px"
                         align="center"
                     >
-                        CDSA 365 is glad to invite you to join the team.
+                        CDSA 365 is inviting you to join the team.
                     </mj-text>
                     <mj-text color="#637381" font-size="16px" align="center">
                         Hi <b>{{first_name}}<b>,
@@ -91,69 +75,6 @@
                     >
                         Join CDSA 365
                     </mj-button>
-                </mj-column>
-            </mj-section>
-            <mj-section
-                background-color="#ffffff"
-                padding-left="15px"
-                padding-right="15px"
-                padding-top="0"
-            >
-                <mj-column width="100%">
-                    <mj-divider border-color="#DFE3E8" border-width="1px" />
-                </mj-column>
-            </mj-section>
-            <mj-section background-color="#ffffff" padding="0 15px 0 15px">
-                <mj-column width="100%">
-                    <mj-text
-                        color="#212b35"
-                        font-weight="bold"
-                        font-size="20px"
-                        padding-bottom="0"
-                    >
-                        Come see us!
-                    </mj-text>
-                    <mj-text color="#637381" font-size="16px">
-                        We're looking forward to meeting you.
-                    </mj-text>
-                </mj-column>
-            </mj-section>
-            <mj-section
-                background-color="#ffffff"
-                padding-left="15px"
-                padding-right="15px"
-            >
-                <mj-column width="50%">
-                    <mj-text
-                        color="#212b35"
-                        font-size="12px"
-                        text-transform="uppercase"
-                        font-weight="bold"
-                        padding-bottom="0"
-                    >
-                        address
-                    </mj-text>
-                    <mj-text color="#637381" font-size="14px" padding-top="0">
-                        Austin Convention Center
-                        <br />
-                        123 Main Street, 78701
-                    </mj-text>
-                </mj-column>
-                <mj-column width="50%">
-                    <mj-text
-                        color="#212b35"
-                        font-size="12px"
-                        text-transform="uppercase"
-                        font-weight="bold"
-                        padding-bottom="0"
-                    >
-                        Hours of Operation
-                    </mj-text>
-                    <mj-text color="#637381" font-size="14px" padding-top="0">
-                        Monday, December 20th: 8:00AM - 5:00PM
-                        <br />
-                        Tuesday, December 21st: 8:00AM - 5:00PM
-                    </mj-text>
                 </mj-column>
             </mj-section>
         </mj-wrapper>

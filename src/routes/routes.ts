@@ -11,6 +11,7 @@ import StudentController from "../controllers/student.controller";
 import TrainerController from "../controllers/trainer.controller";
 import DashController from "../controllers/dash-controller";
 import Validator from "../middlewares/validator";
+import AnnouncementController from "../controllers/announcement.controller";
 import { RotuePaths } from "../types/types";
 
 export default class Routes {
@@ -28,6 +29,7 @@ export default class Routes {
     protected leadsCtrl: LeadsController;
     protected dashCtrl: DashController;
     protected paths: RotuePaths;
+    protected announcementCtrl: AnnouncementController;
 
     constructor() {
         this.router = Router();
@@ -43,6 +45,7 @@ export default class Routes {
         this.paymentCtrl = new PaymentController();
         this.leadsCtrl = new LeadsController();
         this.dashCtrl = new DashController();
+        this.announcementCtrl = new AnnouncementController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -112,6 +115,10 @@ export default class Routes {
             getCountReport: "/report/count-report",
             getPaymentDataForManualEntry: "/payments/make-entry/:key/:entity",
             createManualPaymentOrder: "/payment/create-manual-order",
+            createAnnouncement: "/announcement",
+            fetchAnnouncement: "/announcement",
+            deleteAnnouncement: "/announcement/:id",
+            findAnnouncement: "/announcement/:entity",
         };
     };
 
@@ -171,6 +178,14 @@ export default class Routes {
             this.paths.getPaymentDataForManualEntry,
             this.paymentCtrl.getPaymentHistoryforManualCapture
         );
+        this.router.get(
+            this.paths.findAnnouncement,
+            this.announcementCtrl.findAnnouncement
+        );
+        this.router.get(
+            this.paths.fetchAnnouncement,
+            this.announcementCtrl.getAnnouncements
+        ); // Keep this last
         this.router.get(
             this.paths.getYearlyDurations,
             this.trainerCtrl.getYearlyDurations
@@ -282,6 +297,10 @@ export default class Routes {
             this.paths.createManualPaymentOrder,
             this.paymentCtrl.createManualPaymentOrder
         );
+        this.router.post(
+            this.paths.createAnnouncement,
+            this.announcementCtrl.makeAnouncement
+        );
     };
 
     /*******************
@@ -299,6 +318,10 @@ export default class Routes {
         this.router.delete(
             this.paths.unassignClasses,
             this.trainerCtrl.unassignClassToTrainer
+        );
+        this.router.delete(
+            this.paths.deleteAnnouncement,
+            this.announcementCtrl.deleteAnnouncement
         );
     };
 }

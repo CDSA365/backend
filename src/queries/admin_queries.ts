@@ -74,3 +74,7 @@ where sca.year = ? and sca.month = ?`;
 export const get_payment_history_by_id = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.id = ? and sph.status != 'created' order by sph.updated_at desc;`;
 export const get_payment_history_by_email = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.email = ? and sph.status != 'created' order by sph.updated_at desc;`;
 export const get_payment_history_by_phone = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.phone = ? and sph.status != 'created' order by sph.updated_at desc;`;
+export const create_announcement = `insert into announcements set ?`;
+export const fetch_announcement = `select * from announcements`;
+export const delete_announcement = `delete from announcements where id = ?`;
+export const find_announcement = `select * from announcements where CURRENT_TIMESTAMP >= start_time and CURRENT_TIMESTAMP <= end_time and entity = ? order by created_at desc`;
