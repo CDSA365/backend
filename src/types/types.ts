@@ -93,6 +93,7 @@ export interface RotuePaths {
     fetchAnnouncement: string;
     deleteAnnouncement: string;
     findAnnouncement: string;
+    sendContactFormEmail: string;
 }
 
 export interface TransportInfo {
@@ -139,4 +140,12 @@ export interface EmailBody {
     subject: string;
     text: string;
     html: string;
+}
+
+export interface ContactFormBody {
+    first_name: string;
+    last_name: string;
+    email: string;
+    subject: string;
+    message: string;
 }

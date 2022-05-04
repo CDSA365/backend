@@ -13,6 +13,7 @@ import DashController from "../controllers/dash-controller";
 import Validator from "../middlewares/validator";
 import AnnouncementController from "../controllers/announcement.controller";
 import { RotuePaths } from "../types/types";
+import ContactFormController from "../controllers/contactform.controller";
 
 export default class Routes {
     public router: Router;
@@ -30,6 +31,7 @@ export default class Routes {
     protected dashCtrl: DashController;
     protected paths: RotuePaths;
     protected announcementCtrl: AnnouncementController;
+    protected contactFormCtrl: ContactFormController;
 
     constructor() {
         this.router = Router();
@@ -46,6 +48,7 @@ export default class Routes {
         this.leadsCtrl = new LeadsController();
         this.dashCtrl = new DashController();
         this.announcementCtrl = new AnnouncementController();
+        this.contactFormCtrl = new ContactFormController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -119,6 +122,7 @@ export default class Routes {
             fetchAnnouncement: "/announcement",
             deleteAnnouncement: "/announcement/:id",
             findAnnouncement: "/announcement/:entity",
+            sendContactFormEmail: "/contact-form",
         };
     };
 
@@ -300,6 +304,10 @@ export default class Routes {
         this.router.post(
             this.paths.createAnnouncement,
             this.announcementCtrl.makeAnouncement
+        );
+        this.router.post(
+            this.paths.sendContactFormEmail,
+            this.contactFormCtrl.sendContactFormEmails
         );
     };
 

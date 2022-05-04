@@ -28,7 +28,6 @@ export const getFromSSM = (key: string): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
         ssm.getParameter({ Name: key }, (err, data) => {
             if (err) reject(err);
-            console.log("SSM Data", data);
             resolve(data?.Parameter?.Value);
         });
     });
