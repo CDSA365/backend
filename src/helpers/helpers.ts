@@ -27,8 +27,9 @@ export const getFromSSM = (key: string): Promise<string | undefined> => {
     const ssm = new SSM({ region: "ap-south-1" });
     return new Promise((resolve, reject) => {
         ssm.getParameter({ Name: key }, (err, data) => {
-            if (err) reject("");
-            resolve(data.Parameter?.Value);
+            if (err) reject(err);
+            console.log("SSM Data", data);
+            resolve(data?.Parameter?.Value);
         });
     });
 };
