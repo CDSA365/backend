@@ -8,6 +8,7 @@ export default class EmailService {
 
     private getKeys = async () => {
         const key = await getFromSSM(String(EMAIL_API_KEY)).then((key) => key);
+        console.log("SSM KEY", key);
         Email.setApiKey(String(key));
     };
 
