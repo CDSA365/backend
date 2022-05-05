@@ -181,6 +181,7 @@ export default class TrainerController {
                 });
                 const resp = await Promise.allSettled(promises);
                 const statusPromises = resp.map((res: any) => {
+                    console.log("INVITE RESPONSE", res);
                     if (res.value.sent) {
                         return this.updateInviteStatus(res.value.email, conn);
                     }
