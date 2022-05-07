@@ -1,0 +1,70 @@
+<mjml>
+    <mj-head>
+        <mj-preview>Contact form submission</mj-preview>
+    </mj-head>
+    <mj-body background-color="#d7dde5">
+        <mj-wrapper border-radius="8px">
+            <mj-section background-color="#1e3a8a"></mj-section>
+            <mj-section background-color="#fff">
+                <mj-column width="560px">
+                    <mj-text font-size="16px" font-weight="bold">
+                        Received contact form submission
+                    </mj-text>
+                    <mj-text>
+                        This form is submitted from contact form on cdsa365.com
+                    </mj-text>
+                    <mj-divider
+                        border-width="1px"
+                        border-style="solid"
+                        border-color="lightgrey"
+                    />
+                </mj-column>
+            </mj-section>
+            <mj-section background-color="#fff">
+                <mj-column width="560px">
+                    <mj-table>
+                        <tr>
+                            <td style="font-weight: bold; padding: 10px">
+                                Name
+                            </td>
+                            <td style="padding: 10px">
+                                {{first_name}} {{last_name}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; padding: 10px">
+                                Email
+                            </td>
+                            <td style="padding: 10px">{{email}}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; padding: 10px">
+                                Subject
+                            </td>
+                            <td style="padding: 10px">{{subject}}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; padding: 10px">
+                                Message
+                            </td>
+                            <td style="padding: 10px">{{message}}</td>
+                        </tr>
+                    </mj-table>
+                </mj-column>
+            </mj-section>
+            <mj-section background-color="#eff6ff">
+                <mj-column width="560px">
+                    <mj-text color="#777" align="center">
+                        <small><b>Carpe Diem Skills Academy<b></small>
+                    </mj-text>
+                    <mj-text color="#777" align="center">
+                        <small
+                            >This is a system generated email. Do no reply to
+                            this email or email address</small
+                        >
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
+    </mj-body>
+</mjml>

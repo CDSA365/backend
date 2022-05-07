@@ -1,4 +1,4 @@
-import { JwtPayload } from "jsonwebtoken";
+import { message, subject } from "aws-sdk/clients/sns";
 
 export interface RegisterUserDataType {
     first_name: string;
@@ -109,8 +109,9 @@ export interface EmailContext {
     first_name?: string;
     last_name?: string;
 }
+
 export interface InvitationEmailContext extends EmailContext {
-    token: string;
+    token?: string;
     url: string;
 }
 
@@ -120,6 +121,11 @@ export interface VerificationEmailContext extends EmailContext {
     url: string;
 }
 
+export interface ContactFormEmailContext extends EmailContext {
+    email: string;
+    subject: subject;
+    message: message;
+}
 export interface PromiseFulfilledResult<T> {
     status: "fulfilled";
     value: T;

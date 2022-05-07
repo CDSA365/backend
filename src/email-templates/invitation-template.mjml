@@ -47,13 +47,6 @@
                     <mj-text color="#637381" font-size="16px" align="center">
                         Hi <b>{{first_name}}<b>,
                     </mj-text>
-                    <mj-text color="#637381" font-size="16px" align="center">
-                        Lorem ipsum, dolor sit amet consectetur adipisicing
-                        elit. Quia a assumenda nulla in quisquam optio quibusdam
-                        fugiat perspiciatis nobis, ad tempora culpa porro
-                        labore. Repudiandae accusamus obcaecati voluptatibus
-                        accusantium perspiciatis.
-                    </mj-text>
                     <mj-text
                         color="#637381"
                         font-size="16px"
@@ -61,7 +54,7 @@
                         align="center"
                     >
                         <b
-                            >Click the below link to create an account</b
+                            >Click the button below to create an account. if you have trouble opening the link, please copy paste the link below in a browser</b
                         >
                     </mj-text>
                     <mj-button
@@ -75,6 +68,9 @@
                     >
                         Join CDSA 365
                     </mj-button>
+                    <mj-text>
+                        <small>{{url}}</small>
+                    </mj-text>
                 </mj-column>
             </mj-section>
         </mj-wrapper>

@@ -23,11 +23,7 @@ import {
 import DataTransformer from "../services/data-transform-service";
 import EmailService from "../services/mail-service";
 import Token from "../services/token-service";
-import {
-    EmailBody,
-    InvitationEmailContext,
-    TransportInfo,
-} from "../types/types";
+import { InvitationEmailContext, TransportInfo } from "../types/types";
 import crypto from "crypto";
 import { months } from "../constants/constant";
 
@@ -159,25 +155,25 @@ export default class TrainerController {
                 });
             } else {
                 const promises = result.map((trainer: any) => {
-                    const tokenPayload = {
+                    const jwttoken = this.token.get({
                         first_name: trainer.first_name,
                         last_name: trainer.last_name,
                         email: trainer.email,
                         token: trainer.auth_token,
-                    };
-                    const token = this.token.get(tokenPayload);
-                    const url = `${TRAINER_PORTAL}/invite/${token}`;
-                    const content = `Please click the link or copy paste the link in a browser to join CDSA 365.`;
-                    const text = `${content} ${url}`;
-                    const html = `<p>${content} <a href='${url}'>${url}</a></p>`;
-                    const info: EmailBody = {
+                    });
+                    const sendingInfo: TransportInfo = {
                         from: String(SENDER_EMAIL),
                         to: trainer.email,
-                        subject: "Invitation to join Carpe Diem Skills Academy",
-                        text: text,
-                        html: html,
+                        subject: "Invitation to join CDSA",
                     };
-                    return this.emailService.send(info);
+                    const context: InvitationEmailContext = {
+                        first_name: trainer.first_name,
+                        url: `${TRAINER_PORTAL}/invite/${jwttoken}`,
+                    };
+                    return this.emailService.sendInvitationMail(
+                        sendingInfo,
+                        context
+                    );
                 });
                 const resp = await Promise.allSettled(promises);
                 const statusPromises = resp.map((res: any) => {

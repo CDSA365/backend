@@ -160,15 +160,18 @@ export default class AuthController {
         const payload = { id, email: user.email, secret };
         const token = this.token.get(payload, 60 * 5);
         const link = `${ADMIN_PORTAL}/email/verify/${token}`;
-        const body = `Please click the link or copy paste the link in a browser to verify your email.`;
+        const transportInfo: TransportInfo = {
+            from: String(SENDER_EMAIL),
+            to: user.email,
+            subject: "Verify email for CDSA 365",
+        };
+        const context: VerificationEmailContext = {
+            email: user.eamil,
+            token: token,
+            url: link,
+        };
         return this.emailService
-            .send({
-                from: String(SENDER_EMAIL),
-                to: user.email,
-                subject: "Verify email for CDSA 365",
-                text: `${body} ${link}`,
-                html: `<p>${body} <a href='${link}'>${link}</a></p>`,
-            })
+            .sendVerificationEmail(transportInfo, context)
             .then((result) => result)
             .catch((err) => {
                 throw new Error(err);
