@@ -42,6 +42,10 @@ const config = {
                     from: path.join(__dirname, "README.md"),
                     to: `${dstPath}/README.md`,
                 },
+                {
+                    from: path.join(__dirname, "/src/email-templates"),
+                    to: `${dstPath}/email-templates`,
+                },
             ],
         }),
     ],
@@ -55,6 +59,15 @@ const config = {
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: "asset",
+            },
+            {
+                test: /\.mjml$/,
+                use: [
+                    {
+                        loader: "webpack-mjml-loader",
+                        options: { minify: true },
+                    },
+                ],
             },
         ],
     },

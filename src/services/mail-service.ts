@@ -11,7 +11,7 @@ import mjml2html from "mjml";
 import * as fs from "fs";
 import * as path from "path";
 
-const { EMAIL_API_KEY, SENDER_EMAIL } = process.env;
+const { EMAIL_API_KEY, SENDER_EMAIL, API_STAGE } = process.env;
 export default class EmailService {
     protected mjmlOptions: any;
 
@@ -26,7 +26,9 @@ export default class EmailService {
         sendingInfo: TransportInfo,
         context: InvitationEmailContext
     ) => {
-        const location = `../email-templates/invitation-template.mjml`;
+        const location = `${
+            API_STAGE === "prod" ? "." : ".."
+        }/email-templates/invitation-template.mjml`;
         const templatePath = path.join(__dirname, location);
         return await this.send(templatePath, sendingInfo, context);
     };
@@ -35,7 +37,9 @@ export default class EmailService {
         info: TransportInfo,
         context: VerificationEmailContext
     ) => {
-        const location = `../email-templates/email-verification-template.mjml`;
+        const location = `${
+            API_STAGE === "prod" ? "." : ".."
+        }/email-templates/email-verification-template.mjml`;
         const templatePath = path.join(__dirname, location);
         info.subject = info.subject ?? "Verify your email";
         return await this.send(templatePath, info, context);
@@ -45,7 +49,9 @@ export default class EmailService {
         info: TransportInfo,
         context: ContactFormEmailContext
     ) => {
-        const location = `../email-templates/contact-form-template.mjml`;
+        const location = `${
+            API_STAGE === "prod" ? "." : ".."
+        }/email-templates/contact-form-template.mjml`;
         const templatePath = path.join(__dirname, location);
         return await this.send(templatePath, info, context);
     };
@@ -70,7 +76,6 @@ export default class EmailService {
 
     protected getKeys = async () => {
         const key = await getFromSSM(String(EMAIL_API_KEY)).then((key) => key);
-        console.log("SSM KEY", key);
         Email.setApiKey(String(key));
     };
 
@@ -97,8 +102,7 @@ export default class EmailService {
                 });
                 resolve({ sent: true, email: toEmail });
             } catch (error: any) {
-                console.log("EMAIL ERROR:", error);
-                reject({ sent: false, email: toEmail });
+                reject({ sent: false, email: toEmail, error: error });
             }
         });
     };
