@@ -1,7 +1,11 @@
 import { getFromSSM } from "../helpers/helpers";
 import { Twilio } from "twilio";
 
-const { TWILIO_SID: SID, TWILIO_AUTH_TOKEN: TKN } = process.env;
+const {
+    TWILIO_SID: SID,
+    TWILIO_AUTH_TOKEN: TKN,
+    SMS_SENDER: SENDER,
+} = process.env;
 
 export default class SMS {
     constructor() {}
@@ -19,7 +23,7 @@ export default class SMS {
                     const client = new Twilio(sid, token);
                     client.messages
                         .create({
-                            from: "whatsapp:+14155238886",
+                            from: `whatsapp:${String(SENDER)}`,
                             to: "whatsapp:+916379106229",
                             body: message,
                         })

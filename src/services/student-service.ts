@@ -6,6 +6,7 @@ import {
     get_class_by_id,
 } from "../queries/admin_queries";
 import SMS from "./sms-service";
+import { compile } from "handlebars";
 
 export default class StudentService {
     protected db: DB;
@@ -34,18 +35,10 @@ export default class StudentService {
                 if (r1.status === "fulfilled" && r2.status === "fulfilled") {
                     r2.value[0].map((student) => {
                         const [[cls]] = r1.value;
-                        const message = `Hello ${
-                            student.first_name
-                        }, You have been assigned to the class '${
-                            cls.title
-                        }'. The class is scheduled for ${moment(cls.start_time)
-                            .tz("Asia/Kolkata")
-                            .format("LT")} on ${moment(cls.start_time)
-                            .tz("Asia/Kolkata")
-                            .format(
-                                "LL"
-                            )}. For more information, please login to your CDSA365 portal.
-                        `;
+                        const message = this.compileClassNotificationMessage(
+                            student,
+                            cls
+                        );
                         this.sms
                             .send(message)
                             .then((resp) => {
@@ -81,5 +74,19 @@ export default class StudentService {
                 .push(o);
             return r;
         }, {});
+    };
+
+    protected compileClassNotificationMessage = (student: any, cls: any) => {
+        const source = `Hi {{1}}, You have been assigned to {{2}} class which is scheduled to start at {{3}} on {{4}}. Please login to https://www.cdsa365.com to view class details.`;
+        const messageData = {
+            1: student.first_name,
+            2: cls.title,
+            3: moment(cls.start_time).tz("Asia/Kolkata").format("LT"),
+            4: moment(cls.start_time).tz("Asia/Kolkata").format("LL"),
+        };
+        const template = compile(source);
+        const result = template(messageData);
+        console.log(result);
+        return result;
     };
 }
