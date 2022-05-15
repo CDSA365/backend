@@ -41,14 +41,8 @@ export default class StudentService {
                         );
                         this.sms
                             .send(message)
-                            .then((resp) => {
-                                console.log(resp);
-                                resolve(true);
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                                reject(false);
-                            });
+                            .then(() => resolve(true))
+                            .catch(() => reject(false));
                     });
                 } else {
                     reject(false);
@@ -86,7 +80,6 @@ export default class StudentService {
         };
         const template = compile(source);
         const result = template(messageData);
-        console.log(result);
         return result;
     };
 }

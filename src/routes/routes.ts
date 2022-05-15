@@ -14,6 +14,7 @@ import Validator from "../middlewares/validator";
 import AnnouncementController from "../controllers/announcement.controller";
 import { RotuePaths } from "../types/types";
 import ContactFormController from "../controllers/contactform.controller";
+import OTPController from "../controllers/otp.controller";
 
 export default class Routes {
     public router: Router;
@@ -32,6 +33,7 @@ export default class Routes {
     protected paths: RotuePaths;
     protected announcementCtrl: AnnouncementController;
     protected contactFormCtrl: ContactFormController;
+    protected otpCntrl: OTPController;
 
     constructor() {
         this.router = Router();
@@ -49,6 +51,7 @@ export default class Routes {
         this.dashCtrl = new DashController();
         this.announcementCtrl = new AnnouncementController();
         this.contactFormCtrl = new ContactFormController();
+        this.otpCntrl = new OTPController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -123,6 +126,8 @@ export default class Routes {
             deleteAnnouncement: "/announcement/:id",
             findAnnouncement: "/announcement/:entity",
             sendContactFormEmail: "/contact-form",
+            sendOTP: "/send-otp",
+            verifyOTP: "/verify-otp",
         };
     };
 
@@ -309,6 +314,8 @@ export default class Routes {
             this.paths.sendContactFormEmail,
             this.contactFormCtrl.sendContactFormEmails
         );
+        this.router.post(this.paths.sendOTP, this.otpCntrl.sendOTPSMS);
+        this.router.post(this.paths.verifyOTP, this.otpCntrl.verifyOtp);
     };
 
     /*******************

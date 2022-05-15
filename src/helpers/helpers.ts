@@ -32,3 +32,10 @@ export const getFromSSM = (key: string): Promise<string | undefined> => {
         });
     });
 };
+
+export const formatPhone = (num: number | string) => {
+    let phone = String(num);
+    phone = phone.slice(phone.length - 10);
+    phone = `+91${phone}`;
+    return phone.length === 13 ? phone : num;
+};

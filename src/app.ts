@@ -1,7 +1,10 @@
 import express, { Application } from "express";
+import cluster from "cluster";
+import os from "os";
+import { pid } from "process";
 import Routes from "./routes/routes";
 
-const { API_VERSION } = process.env;
+const { API_VERSION, API_STAGE } = process.env;
 
 export default class App {
     protected app: Application;
@@ -9,6 +12,7 @@ export default class App {
     protected middlewares: any[];
     protected routes: Routes;
     protected path: string;
+    protected numCPU: number;
 
     constructor(port: number, middlewares: any[]) {
         this.app = express();
@@ -16,6 +20,7 @@ export default class App {
         this.routes = new Routes();
         this.path = `/${API_VERSION}`;
         this.port = port;
+        this.numCPU = os.cpus().length;
     }
 
     initApp = () => {
@@ -36,8 +41,17 @@ export default class App {
     };
 
     listen = () => {
-        this.app.listen(this.port, () => {
-            console.log(`Listening on port: ${this.port}`);
-        });
+        if (cluster.isMaster && API_STAGE === "prod") {
+            for (let index = 0; index < this.numCPU; index++) cluster.fork();
+            cluster.on("exit", (worker) => {
+                console.log(`worker ${worker.process.pid} died`);
+                cluster.fork();
+            });
+        } else {
+            this.app.listen(this.port, () => {
+                const message = `Server ${pid} listening on port: ${this.port}`;
+                console.log(message);
+            });
+        }
     };
 }

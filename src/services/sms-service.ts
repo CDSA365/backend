@@ -1,10 +1,11 @@
-import { getFromSSM } from "../helpers/helpers";
+import { formatPhone, getFromSSM } from "../helpers/helpers";
 import { Twilio } from "twilio";
 
 const {
     TWILIO_SID: SID,
     TWILIO_AUTH_TOKEN: TKN,
-    SMS_SENDER: SENDER,
+    SMS_SENDER,
+    WHATSAPP_SENDER,
 } = process.env;
 
 export default class SMS {
@@ -16,15 +17,25 @@ export default class SMS {
         return [sid, token];
     };
 
-    public send = (message: string = "Hello!") => {
+    public send = (
+        message: string = "Hello!",
+        to: number = 6379106229,
+        throughWhatsapp: boolean = false
+    ) => {
         return new Promise((resolve, reject) => {
             this.getKeys()
                 .then(([sid, token]) => {
                     const client = new Twilio(sid, token);
+                    const fromNumber = throughWhatsapp
+                        ? `whatsapp:${String(WHATSAPP_SENDER)}`
+                        : String(SMS_SENDER);
+                    const toNumber = throughWhatsapp
+                        ? `whatsapp:${formatPhone(to)}`
+                        : formatPhone(to);
                     client.messages
                         .create({
-                            from: `whatsapp:${String(SENDER)}`,
-                            to: "whatsapp:+916379106229",
+                            from: String(fromNumber),
+                            to: String(toNumber),
                             body: message,
                         })
                         .then((msg) => resolve(msg))

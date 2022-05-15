@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import DB from "../constructs/db";
+import { formatPhone } from "../helpers/helpers";
 import { add_leads, get_leads } from "../queries/admin_queries";
 
 export default class LeadsController {
@@ -13,6 +14,7 @@ export default class LeadsController {
     public addLead = async (req: Request, res: Response) => {
         const conn = await this.db.getConnection();
         try {
+            req.body.phone = formatPhone(req.body.phone);
             const [result] = await conn.query<ResultSetHeader>(add_leads, [
                 req.body,
             ]);

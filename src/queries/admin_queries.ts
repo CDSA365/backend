@@ -78,3 +78,5 @@ export const create_announcement = `insert into announcements set ?`;
 export const fetch_announcement = `select * from announcements`;
 export const delete_announcement = `delete from announcements where id = ?`;
 export const find_announcement = `select * from announcements where CURRENT_TIMESTAMP >= start_time and CURRENT_TIMESTAMP <= end_time and entity = ? order by created_at desc`;
+export const create_otp_entry = `insert into otp_data (phone,otp,valid_till) values (?,?,?) on duplicate key update phone = values(phone), otp = values(otp), valid_till = values(valid_till)`;
+export const fetch_otp_record = `select count(*) as count from otp_data where phone = ? and otp = ? and CURRENT_TIMESTAMP <= valid_till`;

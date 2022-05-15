@@ -94,6 +94,8 @@ export interface RotuePaths {
     deleteAnnouncement: string;
     findAnnouncement: string;
     sendContactFormEmail: string;
+    sendOTP: string;
+    verifyOTP: string;
 }
 
 export interface TransportInfo {
