@@ -128,6 +128,7 @@ export default class Routes {
             sendContactFormEmail: "/contact-form",
             sendOTP: "/send-otp",
             verifyOTP: "/verify-otp",
+            sendResetPasswordLink: "/rest-password/send-email",
         };
     };
 
@@ -316,6 +317,10 @@ export default class Routes {
         );
         this.router.post(this.paths.sendOTP, this.otpCntrl.sendOTPSMS);
         this.router.post(this.paths.verifyOTP, this.otpCntrl.verifyOtp);
+        this.router.post(
+            this.paths.sendResetPasswordLink,
+            this.authCtrl.sendPasswordResetEmail
+        );
     };
 
     /*******************

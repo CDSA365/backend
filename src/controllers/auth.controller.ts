@@ -12,8 +12,10 @@ import {
     update_email_status,
     login_trainer,
     update_trainer_by_token,
+    get_data_for_password_reset,
 } from "../queries/admin_queries";
 import {
+    PasswordResetEmailContext,
     RegisterUserDataType,
     TransportInfo,
     VerificationEmailContext,
@@ -26,7 +28,8 @@ import Token from "../services/token-service";
 import DataTransformer from "../services/data-transform-service";
 import moment from "moment";
 
-const { ADMIN_PORTAL, SENDER_EMAIL } = process.env;
+const { ADMIN_PORTAL, SENDER_EMAIL, STUDENT_PORTAL, TRAINER_PORTAL } =
+    process.env;
 export default class AuthController {
     protected emailService: EmailService;
     protected transformer: DataTransformer;
@@ -255,5 +258,98 @@ export default class AuthController {
                 })
                 .finally(() => conn.release());
         });
+    };
+
+    public sendPasswordResetEmail = async (req: Request, res: Response) => {
+        this.db
+            .getConnection()
+            .then((conn) => {
+                const { email, portal } = req.body;
+                let table = "";
+                if (portal === "student") table = "students";
+                if (portal === "trainer") table = "trainers";
+                if (portal === "admin") table = "admins";
+                if (table) {
+                    conn.query<RowDataPacket[]>(get_data_for_password_reset, [
+                        table,
+                        email,
+                    ])
+                        .then(([[result]]) => {
+                            if (result) {
+                                const transportInfo: TransportInfo = {
+                                    to: result.email,
+                                    subject: "Reset password for CDSA365",
+                                };
+                                const context: PasswordResetEmailContext = {
+                                    first_name: result.first_name,
+                                    link: this.getResetPasswordLink(
+                                        result,
+                                        portal
+                                    ),
+                                };
+                                this.emailService
+                                    .sendPasswordResetEmail(
+                                        transportInfo,
+                                        context
+                                    )
+                                    .then(() => {
+                                        res.status(200).json({
+                                            message: `Reset password link is sent to ${email}`,
+                                        });
+                                    })
+                                    .catch(() => {
+                                        throw new Error(
+                                            "Error while sending password reset email. Try again!"
+                                        );
+                                    });
+                            } else {
+                                res.status(500).json({
+                                    error: true,
+                                    message:
+                                        "No account is associated with this email address",
+                                });
+                            }
+                        })
+                        .catch((err) => {
+                            res.status(500).json({
+                                error: true,
+                                message: err.message,
+                            });
+                        })
+                        .finally(() => conn.release());
+                } else {
+                    conn.release();
+                    res.status(500).json({
+                        error: true,
+                        message: "Wrong entity provided",
+                    });
+                }
+            })
+            .catch((err) =>
+                res.status(500).json({ error: true, message: err.message })
+            );
+    };
+
+    protected getResetPasswordLink = (userData: any, portal: string) => {
+        let host = "";
+        const token = this.token.get({
+            email: userData.email,
+            token: userData.auth_token,
+        });
+        switch (portal) {
+            case "student":
+                host = String(STUDENT_PORTAL);
+                break;
+            case "trainer":
+                host = String(TRAINER_PORTAL);
+                break;
+            case "admin":
+                host = String(ADMIN_PORTAL);
+                break;
+            default:
+                break;
+        }
+        const link = `${host}/reset-password/${token}`;
+        return link;
     };
 }

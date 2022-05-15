@@ -96,6 +96,7 @@ export interface RotuePaths {
     sendContactFormEmail: string;
     sendOTP: string;
     verifyOTP: string;
+    sendResetPasswordLink: string;
 }
 
 export interface TransportInfo {
@@ -125,8 +126,11 @@ export interface VerificationEmailContext extends EmailContext {
 
 export interface ContactFormEmailContext extends EmailContext {
     email: string;
-    subject: subject;
-    message: message;
+    subject: string;
+    message: string;
+}
+export interface PasswordResetEmailContext extends EmailContext {
+    link: string;
 }
 export interface PromiseFulfilledResult<T> {
     status: "fulfilled";

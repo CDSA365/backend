@@ -1,5 +1,5 @@
 import nodemailer, { Transporter } from "nodemailer";
-import { compile, template } from "handlebars";
+import { compile } from "handlebars";
 import mjml2html from "mjml";
 import * as fs from "fs";
 import * as path from "path";
@@ -57,7 +57,17 @@ export default class EmailService {
         return await this.sendMail(templatePath, info, context);
     };
 
-    private sendMail = async (
+    public sendPasswordResetEmail = async (
+        info: TransportInfo,
+        context: VerificationEmailContext
+    ) => {
+        const location = `../email-templates/reset-password-template.mjml`;
+        const templatePath = path.join(__dirname, location);
+        info.subject = info.subject ?? "Reset password for CDSA365";
+        return await this.sendMail(templatePath, info, context);
+    };
+
+    protected sendMail = async (
         templatePath: string,
         info: TransportInfo,
         context: InvitationEmailContext | VerificationEmailContext

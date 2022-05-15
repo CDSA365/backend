@@ -3,6 +3,7 @@ import { getFromSSM } from "../helpers/helpers";
 import {
     ContactFormEmailContext,
     InvitationEmailContext,
+    PasswordResetEmailContext,
     TransportInfo,
     VerificationEmailContext,
 } from "../types/types";
@@ -56,12 +57,24 @@ export default class EmailService {
         return await this.send(templatePath, info, context);
     };
 
+    public sendPasswordResetEmail = async (
+        info: TransportInfo,
+        context: PasswordResetEmailContext
+    ) => {
+        const location = `${
+            API_STAGE === "prod" ? "." : ".."
+        }/email-templates/reset-password-template.mjml`;
+        const templatePath = path.join(__dirname, location);
+        return await this.send(templatePath, info, context);
+    };
+
     protected renderTemplate = (
         templatePath: string,
         context:
             | InvitationEmailContext
             | VerificationEmailContext
             | ContactFormEmailContext
+            | PasswordResetEmailContext
     ) => {
         try {
             const fileContent = fs.readFileSync(templatePath).toString();
@@ -86,6 +99,7 @@ export default class EmailService {
             | InvitationEmailContext
             | VerificationEmailContext
             | ContactFormEmailContext
+            | PasswordResetEmailContext
     ) => {
         return new Promise(async (resolve, reject) => {
             const { from, to, subject, cc, bcc } = info;
