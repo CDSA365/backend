@@ -5,6 +5,7 @@ import DB from "../constructs/db";
 import {
     create_trainer,
     create_trainer_time_log,
+    delete_trainer,
     fetch_all_trainers,
     fetch_trainers,
     find_one_trainer,
@@ -412,6 +413,29 @@ export default class TrainerController {
             );
             obj["total"] = +(total - obj.year).toFixed(2);
             res.status(200).json(obj);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public deleteTrainer = async (req: Request, res: Response) => {
+        const { trainer_id } = req.params;
+        console.log(
+            "🚀 ~ file: trainer.controller.ts ~ line 425 ~ TrainerController ~ publicdeleteTrainer ~ trainer_id",
+            trainer_id
+        );
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<ResultSetHeader>(delete_trainer, [
+                trainer_id,
+            ]);
+            if (result.affectedRows) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to delete");
+            }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
         } finally {

@@ -55,6 +55,7 @@ export interface RotuePaths {
     fetchAllClasses: string;
     updateClass: string;
     deleteClass: string;
+    deleteTrainer: string;
     getAssignedClasses: string;
     unassignClasses: string;
     verifyTrainer: string;

@@ -81,3 +81,4 @@ export const find_announcement = `select * from announcements where CURRENT_TIME
 export const create_otp_entry = `insert into otp_data (phone,otp,valid_till) values (?,?,?) on duplicate key update phone = values(phone), otp = values(otp), valid_till = values(valid_till)`;
 export const fetch_otp_record = `select count(*) as count from otp_data where phone = ? and otp = ? and CURRENT_TIMESTAMP <= valid_till`;
 export const get_data_for_password_reset = `select * from ?? where email = ?`;
+export const delete_trainer = `delete from trainers where id = ?`;

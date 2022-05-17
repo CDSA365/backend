@@ -129,6 +129,7 @@ export default class Routes {
             sendOTP: "/send-otp",
             verifyOTP: "/verify-otp",
             sendResetPasswordLink: "/rest-password/send-email",
+            deleteTrainer: "/admin/trainer/:trainer_id",
         };
     };
 
@@ -342,6 +343,10 @@ export default class Routes {
         this.router.delete(
             this.paths.deleteAnnouncement,
             this.announcementCtrl.deleteAnnouncement
+        );
+        this.router.delete(
+            this.paths.deleteTrainer,
+            this.trainerCtrl.deleteTrainer
         );
     };
 }
