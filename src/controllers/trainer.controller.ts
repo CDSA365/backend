@@ -422,10 +422,6 @@ export default class TrainerController {
 
     public deleteTrainer = async (req: Request, res: Response) => {
         const { trainer_id } = req.params;
-        console.log(
-            "🚀 ~ file: trainer.controller.ts ~ line 425 ~ TrainerController ~ publicdeleteTrainer ~ trainer_id",
-            trainer_id
-        );
         const conn = await this.db.getConnection();
         try {
             const [result] = await conn.query<ResultSetHeader>(delete_trainer, [
