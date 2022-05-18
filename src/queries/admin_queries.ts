@@ -37,7 +37,7 @@ export const get_trainer_month_attendance = `select ta.trainer_id, ta.day_of_wee
 export const get_trainer_year_attendance = `select ta.trainer_id, ta.day_of_week, ta.day, ta.week, ta.month, ta.year, ta.date, ta.start_time, ta.end_time, ta.salary, TIMESTAMPDIFF(SECOND,ta.start_time,ta.end_time) as duration, c.title from trainer_class_attendance ta inner join classes c on c.id = ta.class_id where ta.start_time is not null and ta.end_time is not null and trainer_id = ? and year = ?`;
 export const register_student = `insert into students set ?`;
 export const check_if_student_exists = `select count(*) as count from students where (email = ? or phone = ?)`;
-export const get_all_students = `select s.*, sc.id as category_id, sc.name as category_name, sph.id as payment_id, sph.next_due from students s left join student_in_categories sic on s.id = sic.student_id left join student_categories sc on sic.student_category_id = sc.id left outer join student_payment_history sph on sph.student_id = s.id group by s.id;`;
+export const get_all_students = `select s.*, sc.id as category_id, sc.name as category_name, sph.id as payment_id, sph.receipt_id, sph.order_created_at, sph.next_due from students s left join student_in_categories sic on s.id = sic.student_id left join student_categories sc on sic.student_category_id = sc.id left outer join student_payment_history sph on sph.student_id = s.id group by s.id;`;
 export const update_student = `update students set ? where id = ?`;
 export const assign_student_to_class = `insert into student_in_classes (combined_id, student_id, class_id) values ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), class_id = values(class_id)`;
 export const assign_student_in_classes_bluk = `insert into student_in_classes (combined_id, student_id, class_id) values ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), class_id = values(class_id)`;
@@ -47,6 +47,7 @@ export const find_student_by_id_bulk = `select * from students where id in (?)`;
 export const get_students_classes = `select c.*, concat(t.first_name, ' ', t.last_name) as trainer_name from classes c inner join student_in_classes sic on c.id = sic.class_id inner join trainer_in_classes tic on tic.class_id = c.id inner join trainers t on t.id = tic.trainer_id where sic.student_id = ?`;
 export const create_payment_history = `insert into student_payment_history set ?`;
 export const update_payment_history = `update student_payment_history set ? where order_id = ?`;
+export const update_payment_history_by_id = `update student_payment_history set ? where id = ?`;
 export const get_payment_history = `select * from student_payment_history where student_id = ? and status != 'created' order by updated_at desc`;
 export const update_trainer_in_class = `update trainer_in_classes set combined_id = ?, trainer_id = ? where class_id = ?`;
 export const update_class_category = `update class_in_categories set class_category_id = ? where class_id = ?`;

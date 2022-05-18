@@ -11,6 +11,7 @@ import {
     get_payment_history_by_id,
     get_payment_history_by_phone,
     update_payment_history,
+    update_payment_history_by_id,
 } from "../queries/admin_queries";
 import crypto from "crypto";
 import SMS from "../services/sms-service";
@@ -99,7 +100,7 @@ export default class PaymentController {
                 amount: req.body.amount,
                 paid: req.body.paid,
                 due: req.body.due,
-                currency: "INT",
+                currency: "INR",
                 status: "paid",
                 notes: "Captured Manually",
                 order_created_at: moment().format(),
@@ -289,6 +290,26 @@ export default class PaymentController {
                 res.status(200).json(result);
             } else {
                 throw new Error("Unable to process the request");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public updatePaymentHistory = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<ResultSetHeader>(
+                update_payment_history_by_id,
+                [req.body, id]
+            );
+            if (result.affectedRows) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to update payment history");
             }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });

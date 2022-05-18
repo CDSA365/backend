@@ -130,6 +130,7 @@ export default class Routes {
             verifyOTP: "/verify-otp",
             sendResetPasswordLink: "/rest-password/send-email",
             deleteTrainer: "/admin/trainer/:trainer_id",
+            updatePaymentHistory: "/payments/update/:id",
         };
     };
 
@@ -321,6 +322,10 @@ export default class Routes {
         this.router.post(
             this.paths.sendResetPasswordLink,
             this.authCtrl.sendPasswordResetEmail
+        );
+        this.router.post(
+            this.paths.updatePaymentHistory,
+            this.paymentCtrl.updatePaymentHistory
         );
     };
 
