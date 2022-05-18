@@ -40,7 +40,7 @@ export default class StudentService {
                             cls
                         );
                         this.sms
-                            .send(message)
+                            .send(message, student.phone)
                             .then(() => resolve(true))
                             .catch(() => reject(false));
                     });
