@@ -6,6 +6,8 @@ import DB from "../constructs/db";
 import {
     create_payment_history,
     extend_due_date,
+    get_last_payment_due_for_manual,
+    get_last_payment_due_for_self,
     get_payment_history,
     get_payment_history_by_email,
     get_payment_history_by_id,
@@ -33,9 +35,32 @@ export default class PaymentController {
         });
     }
 
-    private getNextDue = (gap: number, period: any) => {
-        const nextDue = moment().add(gap, period).format();
-        return nextDue;
+    private getNextDue = async (
+        gap: number,
+        period: any,
+        student_id: number,
+        type: string = "self"
+    ) => {
+        const conn = await this.db.getConnection();
+        let nextDue = moment().add(gap, period).format();
+        try {
+            const query =
+                type === "self"
+                    ? get_last_payment_due_for_self
+                    : get_last_payment_due_for_manual;
+            const [[result]] = await conn.query<RowDataPacket[]>(query, [
+                student_id,
+            ]);
+            if (result && result.next_due) {
+                nextDue = moment(result.next_due).add(gap, period).format();
+            }
+            return nextDue;
+        } catch (error) {
+            console.log(error);
+            return nextDue;
+        } finally {
+            conn.release();
+        }
     };
 
     public createOrder = async (req: Request, res: Response) => {
@@ -69,7 +94,6 @@ export default class PaymentController {
                             .tz("Asia/Kolkata")
                             .format(),
                     };
-                    console.log(values);
                     const [result] = await conn.query<ResultSetHeader>(
                         create_payment_history,
                         [values]
@@ -104,7 +128,12 @@ export default class PaymentController {
                 status: "paid",
                 notes: "Captured Manually",
                 order_created_at: moment().format(),
-                next_due: this.getNextDue(req.body.gap, req.body.period),
+                next_due: await this.getNextDue(
+                    req.body.gap,
+                    req.body.period,
+                    req.body.student_id,
+                    "manual"
+                ),
             };
             const [result] = await conn.query<ResultSetHeader>(
                 create_payment_history,
@@ -138,10 +167,14 @@ export default class PaymentController {
                 const values = {
                     payment_id: req.body.razorpay_payment_id,
                     paid: req.body.paid,
-                    due: req.body.due,
+                    due: 0,
                     status: req.body.status,
                     error_code: req.body.error_code,
-                    next_due: this.getNextDue(req.body.gap, req.body.period),
+                    next_due: await this.getNextDue(
+                        req.body.gap,
+                        req.body.period,
+                        req.body.id
+                    ),
                 };
                 const [result] = await conn.query<ResultSetHeader>(
                     update_payment_history,
@@ -246,7 +279,7 @@ export default class PaymentController {
                         status: r.status,
                         paid_on: r.updated_at,
                     });
-                    response["id"] = r.student_id;
+                    response["id"] = r.id;
                     response["name"] = r.first_name + " " + r.last_name;
                     response["email"] = r.email;
                     response["phone"] = r.phone;
@@ -268,7 +301,6 @@ export default class PaymentController {
 
     public extendDueDate = async (req: Request, res: Response) => {
         const conn = await this.db.getConnection();
-        console.log(req.body);
         const { gap, period, currentDue } = req.body;
         const { payment_id } = req.params;
         try {

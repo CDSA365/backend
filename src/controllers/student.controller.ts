@@ -6,6 +6,7 @@ import {
     check_if_student_exists,
     find_student,
     get_all_students,
+    get_fee_period_gap,
     get_students_classes,
     get_student_attendance_report,
     mark_student_attendance,
@@ -217,6 +218,24 @@ export default class StudentController {
             res.status(500).json({ error: true, ...error });
         } finally {
             conn.release();
+        }
+    };
+
+    public getFeeData = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        const { student_id } = req.params;
+        try {
+            const [[result]] = await conn.query<RowDataPacket[]>(
+                get_fee_period_gap,
+                [student_id]
+            );
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to fetch fee data for student");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
         }
     };
 }

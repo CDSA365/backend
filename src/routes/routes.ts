@@ -131,6 +131,7 @@ export default class Routes {
             sendResetPasswordLink: "/rest-password/send-email",
             deleteTrainer: "/admin/trainer/:trainer_id",
             updatePaymentHistory: "/payments/update/:id",
+            getFeeData: "/student/fee-data/:student_id",
         };
     };
 
@@ -194,6 +195,7 @@ export default class Routes {
             this.paths.findAnnouncement,
             this.announcementCtrl.findAnnouncement
         );
+        this.router.get(this.paths.getFeeData, this.studentCtrl.getFeeData);
         this.router.get(
             this.paths.fetchAnnouncement,
             this.announcementCtrl.getAnnouncements

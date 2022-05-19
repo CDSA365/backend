@@ -72,9 +72,9 @@ join trainer_in_classes tic on tic.class_id = c.id
 join trainers t on t.id = tic.trainer_id
 left join student_class_attendance sca on (sca.student_id = s.id and sca.class_id = c.id)
 where sca.year = ? and sca.month = ?`;
-export const get_payment_history_by_id = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.id = ? and sph.status != 'created' order by sph.updated_at desc;`;
-export const get_payment_history_by_email = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.email = ? and sph.status != 'created' order by sph.updated_at desc;`;
-export const get_payment_history_by_phone = `select s.*, sph.* from students s inner join student_payment_history sph on sph.student_id = s.id where s.phone = ? and sph.status != 'created' order by sph.updated_at desc;`;
+export const get_payment_history_by_id = `select s.*, sph.order_id, sph.receipt_id, sph.payment_id, sph.amount, sph.paid, sph.due, sph.next_due, sph.currency, sph.symbol, sph.offer_id, sph.status, sph.order_created_at, sph.created_at, sph.updated_at from students s left join student_payment_history sph on sph.student_id = s.id where s.id = ? order by sph.updated_at desc;`;
+export const get_payment_history_by_email = `select s.*, sph.order_id, sph.receipt_id, sph.payment_id, sph.amount, sph.paid, sph.due, sph.next_due, sph.currency, sph.symbol, sph.offer_id, sph.status, sph.order_created_at, sph.created_at, sph.updated_at from students s left join student_payment_history sph on sph.student_id = s.id where s.email = ? order by sph.updated_at desc;`;
+export const get_payment_history_by_phone = `select s.*, sph.order_id, sph.receipt_id, sph.payment_id, sph.amount, sph.paid, sph.due, sph.next_due, sph.currency, sph.symbol, sph.offer_id, sph.status, sph.order_created_at, sph.created_at, sph.updated_at from students s left join student_payment_history sph on sph.student_id = s.id where s.phone = ? order by sph.updated_at desc;`;
 export const create_announcement = `insert into announcements set ?`;
 export const fetch_announcement = `select * from announcements`;
 export const delete_announcement = `delete from announcements where id = ?`;
@@ -83,3 +83,6 @@ export const create_otp_entry = `insert into otp_data (phone,otp,valid_till) val
 export const fetch_otp_record = `select count(*) as count from otp_data where phone = ? and otp = ? and CURRENT_TIMESTAMP <= valid_till`;
 export const get_data_for_password_reset = `select * from ?? where email = ?`;
 export const delete_trainer = `delete from trainers where id = ?`;
+export const get_last_payment_due_for_self = `select id, next_due from student_payment_history where student_id = ? order by created_at desc limit 1,1;`;
+export const get_last_payment_due_for_manual = `select id, next_due from student_payment_history where student_id = ? order by created_at desc limit 1;`;
+export const get_fee_period_gap = `select fee, gap, period from students where id = ?`;

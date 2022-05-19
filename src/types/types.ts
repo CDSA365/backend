@@ -99,6 +99,7 @@ export interface RotuePaths {
     verifyOTP: string;
     sendResetPasswordLink: string;
     updatePaymentHistory: string;
+    getFeeData: string;
 }
 
 export interface TransportInfo {
