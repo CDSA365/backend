@@ -80,6 +80,8 @@ export default class Routes {
             createCat: "/admin/category/create",
             getCategory: "/admin/category/:entity",
             addToCat: "/admin/category/add/:entity",
+            viewCategory: "/admin/category/detail/:entity/:cat_id",
+            updateCategory: "/admin/category/:entity/:cat_id",
             getTrainer: "/admin/trainer/:id",
             createClass: "/admin/classes",
             fetchClasses: "/admin/classes",
@@ -94,8 +96,7 @@ export default class Routes {
             createTrianerLog: "/trainer/log-time/create",
             updateTrainerLog: "/trainer/log-time/end/:trainer_id/:class_id",
             getAttendance: "/trainer/attendance/:trainer_id/:year/:month/:week",
-            getMonthlyDurations:
-                "/trainer/attendance/month/:trainer_id/:year/:month",
+            getMonthlyDurations: `/trainer/attendance/month/:trainer_id/:year/:month`,
             getYearlyDurations: "/trainer/attendance/year/:trainer_id/:year",
             registerStudent: "/student/register",
             getAllStudents: "/admin/students/all",
@@ -132,6 +133,7 @@ export default class Routes {
             deleteTrainer: "/admin/trainer/:trainer_id",
             updatePaymentHistory: "/payments/update/:id",
             getFeeData: "/student/fee-data/:student_id",
+            removeCategoryEntity: `/admin/category/remove-entity/:entity/:cat_id/:entity_id`,
         };
     };
 
@@ -146,6 +148,10 @@ export default class Routes {
             this.trainerCtrl.fetchAllTrainers
         );
         this.router.get(this.paths.verifyEmail, this.authCtrl.verifyEmail);
+        this.router.get(
+            this.paths.viewCategory,
+            this.commonCtrl.getCategoryDetails
+        );
         this.router.get(this.paths.getCategory, this.commonCtrl.getCategory);
         this.router.get(this.paths.fetchClasses, this.classCtrl.fetchclasses);
         this.router.get(
@@ -197,6 +203,10 @@ export default class Routes {
         );
         this.router.get(this.paths.getFeeData, this.studentCtrl.getFeeData);
         this.router.get(
+            this.paths.removeCategoryEntity,
+            this.commonCtrl.removeEntity
+        );
+        this.router.get(
             this.paths.fetchAnnouncement,
             this.announcementCtrl.getAnnouncements
         ); // Keep this last
@@ -233,6 +243,10 @@ export default class Routes {
         this.router.put(
             this.paths.updateStudent,
             this.studentCtrl.updateStudent
+        );
+        this.router.put(
+            this.paths.updateCategory,
+            this.commonCtrl.udpateCategory
         );
     };
 

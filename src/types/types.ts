@@ -47,6 +47,7 @@ export interface RotuePaths {
     sendInvite: string;
     verifyEmail: string;
     createCat: string;
+    viewCategory: string;
     getCategory: string;
     addToCat: string;
     getTrainer: string;
@@ -100,6 +101,8 @@ export interface RotuePaths {
     sendResetPasswordLink: string;
     updatePaymentHistory: string;
     getFeeData: string;
+    updateCategory: string;
+    removeCategoryEntity: string;
 }
 
 export interface TransportInfo {

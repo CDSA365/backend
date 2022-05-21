@@ -86,3 +86,8 @@ export const delete_trainer = `delete from trainers where id = ?`;
 export const get_last_payment_due_for_self = `select id, next_due from student_payment_history where student_id = ? order by created_at desc limit 1,1;`;
 export const get_last_payment_due_for_manual = `select id, next_due from student_payment_history where student_id = ? order by created_at desc limit 1;`;
 export const get_fee_period_gap = `select fee, gap, period from students where id = ?`;
+export const get_student_category_detail = `select c.id as cat_id, c.name as cat_name, c.description as cat_description, s.id, concat(s.first_name, " ", s.last_name) as name, s.email, s.phone from student_categories c left join student_in_categories sic on sic.student_category_id = c.id left join students s on sic.student_id = s.id where c.id = ?`;
+export const get_trainer_category_detail = `select c.id as cat_id, c.name as cat_name, c.description as cat_description, t.id, concat(t.first_name, " ", t.last_name) as name, t.email, t.phone from trainer_categories c left join trainer_in_categories tic on tic.trainer_category_id = c.id left join trainers t on tic.trainer_id = t.id where c.id = ?`;
+export const get_classes_category_detail = `select c.id as cat_id, c.name as cat_name, c.description as cat_description, cls.* from class_categories c left join class_in_categories cic on cic.class_category_id = c.id left join classes cls on cic.class_id = cls.id where c.id = ?`;
+export const update_category = `update ?? set ? where id = ?`;
+export const remove_entity_from_category = `delete from ?? where ?? = ? and ?? = ?`;
