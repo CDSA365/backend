@@ -15,6 +15,7 @@ import {
     get_classes_category_detail,
     update_category,
     remove_entity_from_category,
+    delete_category,
 } from "../queries/admin_queries";
 
 export default class CommonController {
@@ -76,7 +77,11 @@ export default class CommonController {
             let query = "";
             const { cat_id, user_list } = req.body;
             const { entity } = req.params;
-            const values = user_list.map((user: any) => [user, cat_id]);
+            const values = user_list.map((user: any) => [
+                `${user}${cat_id}`,
+                user,
+                cat_id,
+            ]);
             if (entity === "trainer") query = add_to_trainer_category;
             if (entity === "student") query = add_to_student_category;
             if (entity === "class") query = add_to_class_category;
@@ -192,6 +197,30 @@ export default class CommonController {
                 res.status(200).json(result);
             } else {
                 throw new Error(`Unable to remove ${entity} from categories.`);
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public deleteCategory = async (req: Request, res: Response) => {
+        const { entity, cat_id } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            let table = "";
+            if (entity === "trainer") table = "trainer_categories";
+            if (entity === "student") table = "student_categories";
+            if (entity === "class") table = "class_categories";
+            const [result] = await conn.query<ResultSetHeader>(
+                delete_category,
+                [table, cat_id]
+            );
+            if (result.affectedRows) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Error deleting the category");
             }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });

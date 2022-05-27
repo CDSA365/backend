@@ -17,9 +17,9 @@ export const create_category = `insert into ?? (name,description) values (?,?)`;
 export const get_trainer_categories = `select tc.*, count(tic.id) as count from trainer_categories tc left join trainer_in_categories tic on tc.id = tic.trainer_category_id GROUP BY tc.id;`;
 export const get_student_categories = `select sc.*, count(sic.id) as count from student_categories sc left join student_in_categories sic on sc.id = sic.student_category_id GROUP BY sc.id;`;
 export const get_class_categories = `select cc.*, count(cic.id) as count from class_categories cc left join class_in_categories cic on cc.id = cic.class_category_id GROUP BY cc.id;`;
-export const add_to_trainer_category = `insert into trainer_in_categories (trainer_id, trainer_category_id) values ?`;
-export const add_to_student_category = `insert into student_in_categories (student_id, student_category_id) values ?`;
-export const add_to_class_category = `insert into class_in_categories (class_id, class_category_id) values ?`;
+export const add_to_trainer_category = `insert into trainer_in_categories (combined_id, trainer_id, trainer_category_id) values ? on duplicate key update combined_id = values(combined_id), trainer_id = values(trainer_id), trainer_category_id = values(trainer_category_id)`;
+export const add_to_student_category = `insert into student_in_categories (combined_id, student_id, student_category_id) values ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), student_category_id = values(student_category_id)`;
+export const add_to_class_category = `insert into class_in_categories (combined_id, class_id, class_category_id) values ? on duplicate key update combined_id = values(combined_id), class_id = values(class_id), class_category_id = values(class_category_id)`;
 export const find_one_trainer = `select t.*, tc.id as category_id, tc.name as category_name from trainers t left join trainer_in_categories tic on t.id = tic.trainer_id left join trainer_categories tc on tic.trainer_category_id = tc.id where t.id = ?`;
 export const create_class = `insert into classes set ?`;
 export const udpate_class = `update classes set ? where id = ?`;
@@ -91,3 +91,4 @@ export const get_trainer_category_detail = `select c.id as cat_id, c.name as cat
 export const get_classes_category_detail = `select c.id as cat_id, c.name as cat_name, c.description as cat_description, cls.* from class_categories c left join class_in_categories cic on cic.class_category_id = c.id left join classes cls on cic.class_id = cls.id where c.id = ?`;
 export const update_category = `update ?? set ? where id = ?`;
 export const remove_entity_from_category = `delete from ?? where ?? = ? and ?? = ?`;
+export const delete_category = `delete from ?? where id = ?`;

@@ -14,7 +14,10 @@ export default class DataTransformer {
                 const targetData = datas.filter((d) => d.id == data.id);
                 const categories: any[] = [];
                 targetData.map((tdata) => {
-                    if (tdata.category_name !== null) {
+                    const catIndex = categories.findIndex(
+                        (c) => c.id === tdata.category_id
+                    );
+                    if (catIndex == -1 && tdata.category_name !== null) {
                         categories.push({
                             id: tdata.category_id,
                             name: tdata.category_name,

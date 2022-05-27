@@ -134,6 +134,7 @@ export default class Routes {
             updatePaymentHistory: "/payments/update/:id",
             getFeeData: "/student/fee-data/:student_id",
             removeCategoryEntity: `/admin/category/remove-entity/:entity/:cat_id/:entity_id`,
+            deleteCategory: "/admin/category/delete/:entity/:cat_id",
         };
     };
 
@@ -368,6 +369,10 @@ export default class Routes {
         this.router.delete(
             this.paths.deleteTrainer,
             this.trainerCtrl.deleteTrainer
+        );
+        this.router.delete(
+            this.paths.deleteCategory,
+            this.commonCtrl.deleteCategory
         );
     };
 }

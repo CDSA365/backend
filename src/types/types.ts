@@ -103,6 +103,7 @@ export interface RotuePaths {
     getFeeData: string;
     updateCategory: string;
     removeCategoryEntity: string;
+    deleteCategory: string;
 }
 
 export interface TransportInfo {
