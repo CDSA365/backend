@@ -104,6 +104,8 @@ export interface RotuePaths {
     updateCategory: string;
     removeCategoryEntity: string;
     deleteCategory: string;
+    verifyToken: string;
+    updatePassword: string;
 }
 
 export interface TransportInfo {

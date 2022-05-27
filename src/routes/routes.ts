@@ -135,6 +135,8 @@ export default class Routes {
             getFeeData: "/student/fee-data/:student_id",
             removeCategoryEntity: `/admin/category/remove-entity/:entity/:cat_id/:entity_id`,
             deleteCategory: "/admin/category/delete/:entity/:cat_id",
+            updatePassword: "/update-password",
+            verifyToken: "/verify-token/:token",
         };
     };
 
@@ -207,6 +209,7 @@ export default class Routes {
             this.paths.removeCategoryEntity,
             this.commonCtrl.removeEntity
         );
+        this.router.get(this.paths.verifyToken, this.authCtrl.verifyToken);
         this.router.get(
             this.paths.fetchAnnouncement,
             this.announcementCtrl.getAnnouncements
@@ -343,6 +346,10 @@ export default class Routes {
         this.router.post(
             this.paths.updatePaymentHistory,
             this.paymentCtrl.updatePaymentHistory
+        );
+        this.router.post(
+            this.paths.updatePassword,
+            this.authCtrl.updatePassword
         );
     };
 

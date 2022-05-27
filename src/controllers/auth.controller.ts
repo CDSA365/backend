@@ -13,6 +13,8 @@ import {
     login_trainer,
     update_trainer_by_token,
     get_data_for_password_reset,
+    udpate_password,
+    get_data_for_token,
 } from "../queries/admin_queries";
 import {
     PasswordResetEmailContext,
@@ -80,7 +82,8 @@ export default class AuthController {
                 last_name,
                 email,
                 phone,
-                md5(password),
+                this.transformer.encrypt(password),
+                secret_token,
                 secret_token,
             ]);
             return [{ ...result, qrcode }, secret_token];
@@ -133,7 +136,7 @@ export default class AuthController {
                 email,
             ]);
             if (result) {
-                if (result.password !== md5(password)) {
+                if (result.password !== this.transformer.encrypt(password)) {
                     res.status(400).json({
                         error: true,
                         message: "Wrong Password",
@@ -334,6 +337,7 @@ export default class AuthController {
         let host = "";
         const token = this.token.get({
             email: userData.email,
+            portal: portal,
             token: userData.auth_token,
         });
         switch (portal) {
@@ -351,5 +355,60 @@ export default class AuthController {
         }
         const link = `${host}/reset-password/${token}`;
         return link;
+    };
+
+    public updatePassword = async (req: Request, res: Response) => {
+        const { entity, id, password } = req.body;
+        const conn = await this.db.getConnection();
+        try {
+            let table = "";
+            if (entity === "student") table = "students";
+            if (entity === "trainer") table = "trainers";
+            if (entity === "admin") table = "admins";
+            const pass = this.transformer.encrypt(password);
+            const [result] = await conn.query<ResultSetHeader>(
+                udpate_password,
+                [table, pass, id]
+            );
+            if (result.affectedRows) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to reset passwrod");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public verifyToken = async (req: Request, res: Response) => {
+        const { token } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const payload: any = this.token.verify(token);
+            const { email, portal, token: tkn } = payload;
+            let table = "";
+            if (portal === "admin") table = "admins";
+            if (portal === "student") table = "students";
+            if (portal === "trainer") table = "trainers";
+            const [[result]] = await conn.query<RowDataPacket[]>(
+                get_data_for_token,
+                [table, email, tkn]
+            );
+            if (result) {
+                res.status(200).json({
+                    id: result.id,
+                    email: result.email,
+                    token: result.auth_token,
+                });
+            } else {
+                throw new Error("Token verification failed");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
     };
 }
