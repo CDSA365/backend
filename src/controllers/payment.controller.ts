@@ -51,7 +51,6 @@ export default class PaymentController {
             const [[result]] = await conn.query<RowDataPacket[]>(query, [
                 student_id,
             ]);
-            console.log("NEXT DUE RESULT", result);
             if (result && result.next_due) {
                 nextDue = moment(result.next_due).add(gap, period).format();
             }
