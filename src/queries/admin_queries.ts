@@ -14,8 +14,8 @@ export const update_invite_status = `update trainers set invite_status = 1 where
 export const find_admin = `select first_name, last_name, email, phone, email_verified, phone_verified from admins where id = ?`;
 export const update_email_status = `update admins set email_verified = '1' where id = ? and email = ? and secret_token = ? and email_verified = '0'`;
 export const create_category = `insert into ?? (name,description) values (?,?)`;
-export const get_trainer_categories = `select tc.*, count(tic.id) as count from trainer_categories tc left join trainer_in_categories tic on tc.id = tic.trainer_category_id GROUP BY tc.id;`;
-export const get_student_categories = `select sc.*, count(sic.id) as count from student_categories sc left join student_in_categories sic on sc.id = sic.student_category_id GROUP BY sc.id;`;
+export const get_trainer_categories = `select tc.*, count(t.id) as count from trainer_categories tc left join trainer_in_categories tic on tc.id = tic.trainer_category_id left join trainers t on t.id = tic.trainer_id GROUP BY tc.id;`;
+export const get_student_categories = `select sc.*, count(s.id) as count from student_categories sc left join student_in_categories sic on sc.id = sic.student_category_id left join students s on s.id = sic.student_id GROUP BY sc.id;`;
 export const get_class_categories = `select cc.*, count(cic.id) as count from class_categories cc left join class_in_categories cic on cc.id = cic.class_category_id GROUP BY cc.id;`;
 export const add_to_trainer_category = `insert into trainer_in_categories (combined_id, trainer_id, trainer_category_id) values ? on duplicate key update combined_id = values(combined_id), trainer_id = values(trainer_id), trainer_category_id = values(trainer_category_id)`;
 export const add_to_student_category = `insert into student_in_categories (combined_id, student_id, student_category_id) values ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), student_category_id = values(student_category_id)`;
@@ -94,3 +94,4 @@ export const remove_entity_from_category = `delete from ?? where ?? = ? and ?? =
 export const delete_category = `delete from ?? where id = ?`;
 export const udpate_password = `update ?? set password = ? where id = ?`;
 export const get_data_for_token = `select id, email, auth_token, status from ?? where email = ? and auth_token = ?`;
+export const delete_payment = `delete from student_payment_history where receipt_id = ?`;

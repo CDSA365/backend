@@ -106,6 +106,7 @@ export interface RotuePaths {
     deleteCategory: string;
     verifyToken: string;
     updatePassword: string;
+    deletePaymentEntry: string;
 }
 
 export interface TransportInfo {

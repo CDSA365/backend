@@ -137,6 +137,7 @@ export default class Routes {
             deleteCategory: "/admin/category/delete/:entity/:cat_id",
             updatePassword: "/update-password",
             verifyToken: "/verify-token/:token",
+            deletePaymentEntry: "/payments/delete/:receipt_no",
         };
     };
 
@@ -380,6 +381,10 @@ export default class Routes {
         this.router.delete(
             this.paths.deleteCategory,
             this.commonCtrl.deleteCategory
+        );
+        this.router.delete(
+            this.paths.deletePaymentEntry,
+            this.paymentCtrl.deletePayment
         );
     };
 }

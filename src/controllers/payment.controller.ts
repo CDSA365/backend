@@ -5,6 +5,7 @@ import Razorpay from "razorpay";
 import DB from "../constructs/db";
 import {
     create_payment_history,
+    delete_payment,
     extend_due_date,
     get_last_payment_due_for_manual,
     get_last_payment_due_for_self,
@@ -342,6 +343,25 @@ export default class PaymentController {
                 res.status(200).json(result);
             } else {
                 throw new Error("Unable to update payment history");
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public deletePayment = async (req: Request, res: Response) => {
+        const { receipt_no } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<ResultSetHeader>(delete_payment, [
+                receipt_no,
+            ]);
+            if (result.affectedRows) {
+                res.status(200).json(result);
+            } else {
+                throw new Error("Unable to delete payment history");
             }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
