@@ -96,3 +96,5 @@ export const udpate_password = `update ?? set password = ? where id = ?`;
 export const get_data_for_token = `select id, email, auth_token, status from ?? where email = ? and auth_token = ?`;
 export const delete_payment = `delete from student_payment_history where receipt_id = ?`;
 export const get_student_by_id = `select * from students where id = ?`;
+export const delete_leads = `delete from leads where id = ?`;
+export const update_leads = `update leads set ? where id = ?`;

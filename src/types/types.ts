@@ -88,6 +88,7 @@ export interface RotuePaths {
     fetchRemarksForAdmin: string;
     addLeads: string;
     getLeads: string;
+    updateLeads: string;
     attendanceReport: string;
     getCountReport: string;
     getPaymentDataForManualEntry: string;
@@ -108,6 +109,7 @@ export interface RotuePaths {
     verifyToken: string;
     updatePassword: string;
     deletePaymentEntry: string;
+    deleteLeads: string;
 }
 
 export interface TransportInfo {

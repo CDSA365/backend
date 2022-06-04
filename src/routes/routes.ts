@@ -118,6 +118,7 @@ export default class Routes {
             fetchRemarksForAdmin: "/classes/remarks/:class_id",
             addLeads: "/leads/add",
             getLeads: "/leads",
+            deleteLeads: "/leads/delete/:lead_id",
             attendanceReport: "/student/attendance/report",
             getCountReport: "/report/count-report",
             getPaymentDataForManualEntry: "/payments/make-entry/:key/:entity",
@@ -139,6 +140,7 @@ export default class Routes {
             verifyToken: "/verify-token/:token",
             deletePaymentEntry: "/payments/delete/:receipt_no",
             getStudent: "/admin/student/:student_id",
+            updateLeads: "/leads/update/:lead_id",
         };
     };
 
@@ -255,6 +257,7 @@ export default class Routes {
             this.paths.updateCategory,
             this.commonCtrl.udpateCategory
         );
+        this.router.put(this.paths.updateLeads, this.leadsCtrl.updateLeads);
     };
 
     /*****************
@@ -388,5 +391,6 @@ export default class Routes {
             this.paths.deletePaymentEntry,
             this.paymentCtrl.deletePayment
         );
+        this.router.delete(this.paths.deleteLeads, this.leadsCtrl.deleteLeads);
     };
 }
