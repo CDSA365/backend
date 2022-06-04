@@ -9,6 +9,7 @@ import {
     get_fee_period_gap,
     get_students_classes,
     get_student_attendance_report,
+    get_student_by_id,
     mark_student_attendance,
     register_student,
     update_student,
@@ -110,6 +111,28 @@ export default class StudentController {
             const transformedResult =
                 this.transformer.transformForCategories(result);
             res.status(200).json(transformedResult);
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getStudent = async (req: Request, res: Response) => {
+        const { student_id } = req.params;
+        const conn = await this.db.getConnection();
+        try {
+            const [[result]] = await conn.query<RowDataPacket[]>(
+                get_student_by_id,
+                [student_id]
+            );
+            if (result) {
+                delete result["password"];
+                delete result["auth_token"];
+                res.status(200).json(result);
+            } else {
+                throw new Error("No student data found");
+            }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
         } finally {

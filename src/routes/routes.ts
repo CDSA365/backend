@@ -138,6 +138,7 @@ export default class Routes {
             updatePassword: "/update-password",
             verifyToken: "/verify-token/:token",
             deletePaymentEntry: "/payments/delete/:receipt_no",
+            getStudent: "/admin/student/:student_id",
         };
     };
 
@@ -211,6 +212,7 @@ export default class Routes {
             this.commonCtrl.removeEntity
         );
         this.router.get(this.paths.verifyToken, this.authCtrl.verifyToken);
+        this.router.get(this.paths.getStudent, this.studentCtrl.getStudent);
         this.router.get(
             this.paths.fetchAnnouncement,
             this.announcementCtrl.getAnnouncements

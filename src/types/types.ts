@@ -70,6 +70,7 @@ export interface RotuePaths {
     registerStudent: string;
     getAllStudents: string;
     updateStudent: string;
+    getStudent: string;
     assignStudentToClass: string;
     studentLogin: string;
     getStudentClasses: string;
