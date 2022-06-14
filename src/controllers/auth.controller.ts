@@ -219,6 +219,8 @@ export default class AuthController {
     public trainerLogin = (req: Request, res: Response) => {
         const { password: pass, email } = req.body;
         const password = this.transformer.encrypt(pass);
+        console.log("TRAINER EMAIL", email);
+        console.log("TRAINER PASSWORD", password);
         this.db.getConnection().then((conn) => {
             conn.query<RowDataPacket[]>(login_trainer, [email, password])
                 .then(([[result]]) => {

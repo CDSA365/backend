@@ -1,5 +1,6 @@
 import shortid from "shortid";
 import { SSM } from "aws-sdk";
+import moment from "moment";
 
 export const createSlug = (string: string) => {
     return string
@@ -38,4 +39,19 @@ export const formatPhone = (num: number | string) => {
     phone = phone.slice(phone.length - 10);
     phone = `+91${phone}`;
     return phone.length === 13 ? phone : num;
+};
+
+export const getBusinessDays = (endDate: string, startDate: string) => {
+    var lastDay = moment(endDate);
+    var firstDay = moment(startDate);
+    let calcBusinessDays =
+        1 +
+        (lastDay.diff(firstDay, "days") * 5 -
+            (firstDay.day() - lastDay.day()) * 2) /
+            7;
+
+    if (lastDay.day() == 6) calcBusinessDays--; //SAT
+    if (firstDay.day() == 0) calcBusinessDays--; //SUN
+
+    return calcBusinessDays;
 };
