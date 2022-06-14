@@ -19,10 +19,7 @@ export default class Validator {
                 .trim()
                 .escape()
                 .withMessage(MESSAGES.NON_EMPTY_LASTNAME),
-            body("email")
-                .isEmail()
-                .normalizeEmail()
-                .withMessage(MESSAGES.INVALID_EMAIL),
+            body("email").isEmail().withMessage(MESSAGES.INVALID_EMAIL),
             body("phone")
                 .isMobilePhone("en-IN")
                 .withMessage(MESSAGES.INVALID_PHONE),
@@ -40,10 +37,7 @@ export default class Validator {
 
     public login = () => {
         return [
-            body("email")
-                .isEmail()
-                .normalizeEmail()
-                .withMessage(MESSAGES.INVALID_EMAIL),
+            body("email").isEmail().withMessage(MESSAGES.INVALID_EMAIL),
             body("password")
                 .notEmpty()
                 .withMessage(MESSAGES.NON_EMPTY_PASSWORD),
