@@ -21,15 +21,15 @@ export const add_to_trainer_category = `insert into trainer_in_categories (combi
 export const add_to_student_category = `insert into student_in_categories (combined_id, student_id, student_category_id) values ? on duplicate key update combined_id = values(combined_id), student_id = values(student_id), student_category_id = values(student_category_id)`;
 export const add_to_class_category = `insert into class_in_categories (combined_id, class_id, class_category_id) values ? on duplicate key update combined_id = values(combined_id), class_id = values(class_id), class_category_id = values(class_category_id)`;
 export const find_one_trainer = `select t.*, tc.id as category_id, tc.name as category_name from trainers t left join trainer_in_categories tic on t.id = tic.trainer_id left join trainer_categories tc on tic.trainer_category_id = tc.id where t.id = ?`;
-export const create_class = `insert into classes set ?`;
+export const create_class = `INSERT INTO classes (??) VALUES ?`;
 export const udpate_class = `update classes set ? where id = ?`;
 export const delete_class = `delete from classes where id in (?)`;
-export const create_trainer_in_classes = `insert into trainer_in_classes (trainer_id,class_id) values (?,?)`;
+export const create_trainer_in_classes = `insert into trainer_in_classes (combined_id,trainer_id,class_id) values ?`;
 export const get_trainer_in_classes = `select c.*, tic.trainer_id, CONCAT(t.first_name, ' ', t.last_name) as trainer_name, t.email from trainer_in_classes tic inner join classes c on c.id = tic.class_id inner join trainers t on t.id = tic.trainer_id where tic.trainer_id = ? and c.status = 1`;
 export const unassign_trainer = `delete from trainer_in_classes where trainer_id = ? and class_id = ?`;
 export const update_trainer_by_token = `update trainers set ? where auth_token = ?`;
 export const login_trainer = `select * from trainers where email = ? and password = ? limit 1`;
-export const create_class_in_cat = `insert into class_in_categories (class_id,class_category_id) values (?,?)`;
+export const create_class_in_cat = `insert into class_in_categories (class_id,class_category_id) values ?`;
 export const create_trainer_time_log = `insert into trainer_class_attendance set ?`;
 export const update_trainer_time_log = `update trainer_class_attendance set ? where trainer_id = ? and class_id = ? and end_time is null`;
 export const get_trainer_week_attendance = `select ta.trainer_id, ta.day_of_week, ta.day, ta.week, ta.month, ta.year, ta.date, ta.start_time, ta.end_time, TIMESTAMPDIFF(SECOND,ta.start_time,ta.end_time) as duration, c.title from trainer_class_attendance ta inner join classes c on c.id = ta.class_id where ta.start_time is not null and ta.end_time is not null and trainer_id = ? and year = ? and month = ? and week = ?`;
@@ -98,3 +98,4 @@ export const delete_payment = `delete from student_payment_history where receipt
 export const get_student_by_id = `select * from students where id = ?`;
 export const delete_leads = `delete from leads where id = ?`;
 export const update_leads = `update leads set ? where id = ?`;
+export const get_recurring_class_by_id = `select * from classes where recurrance_id = ?`;

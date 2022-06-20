@@ -21,6 +21,7 @@ import ClassServices from "../services/class-service";
 import DataTransformer from "../services/data-transform-service";
 import CommonController from "./common.controller";
 import { createSlugWithKey } from "../helpers/helpers";
+import uniqid from "uniqid";
 
 export default class ClassController {
     protected db: DB;
@@ -38,60 +39,90 @@ export default class ClassController {
     public createClass = async (req: Request, res: Response) => {
         const conn = await this.db.getConnection();
         try {
-            const startTime = moment(req.body.start)
-                .tz("Asia/Kolkata")
-                .format();
-            const endTime = moment(req.body.end).tz("Asia/Kolkata").format();
-            const diff = moment.duration(moment(endTime).diff(startTime));
-            const data = {
-                title: req.body.title,
-                description: req.body.description,
-                slug: createSlugWithKey(req.body.title),
-                start_time: startTime,
-                end_time: endTime,
-                duration: Number(diff.asMinutes()),
-                status: req.body.status ?? 0,
-                type: req.body.type,
-                video_link: req.body.video_link,
-            };
-            const [result] = await conn.query<ResultSetHeader>(create_class, [
-                data,
-            ]);
-            if (result.affectedRows) {
-                const promises: any = [];
-                if (req.body.trainer) {
-                    promises.push(
-                        this.classService.assignClassToTrainer(
-                            req.body.trainer,
-                            result.insertId
-                        )
-                    );
+            const dates: string[] = req.body.date;
+            const { start, end } = req.body;
+            const dataArray: any[] = [];
+            const recurranceID = uniqid();
+            dates.map((date) => {
+                const format = "YYYY/MM/DD HH:mm";
+                const dateReceived = moment(date).format("YYYY/MM/DD");
+                const startTime = moment(dateReceived + " " + start, format);
+                const endTime = moment(dateReceived + " " + end, format);
+                const startDateTime = startTime.format();
+                const endDateTime = endTime.format();
+                const timeDiff = moment(endDateTime).diff(startDateTime);
+                const diff = moment.duration(timeDiff);
+                dataArray.push({
+                    recurrance_id: recurranceID,
+                    title: req.body.title,
+                    description: req.body.description,
+                    slug: createSlugWithKey(req.body.title),
+                    start_time: startDateTime,
+                    end_time: endDateTime,
+                    duration: Number(diff.asMinutes()),
+                    recurring: req.body.recurring ? 1 : 0,
+                    status: req.body.status ?? 0,
+                    type: req.body.type,
+                    video_link: req.body.video_link,
+                });
+            });
+            if (dataArray.length) {
+                const columns = Object.keys(dataArray[0]);
+                const data = dataArray.reduce(
+                    (a, i) => [...a, Object.values(i)],
+                    []
+                );
+                const [result] = await conn.query<ResultSetHeader>(
+                    create_class,
+                    [columns, data]
+                );
+                if (result.affectedRows) {
+                    const promises: any = [];
+                    if (req.body.trainer) {
+                        promises.push(
+                            this.classService.assignClassToTrainer(
+                                req.body.trainer,
+                                result.insertId,
+                                recurranceID,
+                                req.body.recurring
+                            )
+                        );
+                    }
+                    if (req.body.category) {
+                        promises.push(
+                            this.classService.assignClassToCategory(
+                                req.body.category,
+                                result.insertId,
+                                recurranceID,
+                                req.body.recurring
+                            )
+                        );
+                    }
+                    if (req.body.studentCategory) {
+                        promises.push(
+                            this.classService.assignClassToStudents(
+                                req.body.studentCategory,
+                                result.insertId,
+                                recurranceID,
+                                req.body.recurring
+                            )
+                        );
+                    }
+                    await Promise.allSettled(promises);
+                    res.status(200).json({
+                        success: true,
+                        message: `class "${req.body.title}" created.`,
+                    });
+                } else {
+                    res.status(422).json({
+                        error: true,
+                        message: "Error creating class",
+                    });
                 }
-                if (req.body.category) {
-                    promises.push(
-                        this.classService.assignClassToCategory(
-                            req.body.category,
-                            result.insertId
-                        )
-                    );
-                }
-                if (req.body.studentCategory) {
-                    promises.push(
-                        this.classService.assignClassToStudents(
-                            req.body.studentCategory,
-                            result.insertId
-                        )
-                    );
-                }
-                await Promise.allSettled(promises);
+            } else {
                 res.status(200).json({
                     success: true,
-                    message: `class "${req.body.title}" created.`,
-                });
-            } else {
-                res.status(422).json({
-                    error: true,
-                    message: "Error creating class",
+                    message: null,
                 });
             }
         } catch (error: any) {
