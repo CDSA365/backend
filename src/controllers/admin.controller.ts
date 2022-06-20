@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import { RowDataPacket } from "mysql2";
 import DB from "../constructs/db";
-import { find_admin } from "../queries/admin_queries";
-
-const db = new DB();
+import { find_admin, get_all_users } from "../queries/admin_queries";
 
 export default class AdminController {
-    constructor() {}
+    private readonly db: DB;
+
+    constructor() {
+        this.db = new DB();
+    }
 
     public getAdmin = async (req: Request, res: Response) => {
-        const conn = await db.getConnection();
+        const conn = await this.db.getConnection();
         try {
             const { id } = req.params;
             if (id) {
@@ -26,6 +28,18 @@ export default class AdminController {
                     });
                 }
             }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
+        }
+    };
+
+    public getAllAdmins = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const [result] = await conn.query<RowDataPacket[]>(get_all_users);
+            res.status(200).json(result);
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
         } finally {

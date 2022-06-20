@@ -1,7 +1,7 @@
 export const admin_lookup = `select count(*) as count from admins where email = ? or phone = ?`;
 export const create_admin = `insert into admins (first_name, last_name, email, phone, password, secret_token, auth_token) values (?, ?, ?, ?, ?, ?, ?)`;
 export const get_secret = `select secret_token from admins where id = ?`;
-export const find_user = `select id, first_name, last_name, email, phone, email_verified, phone_verified, password from admins where email = ?`;
+export const find_user = `select id, role, first_name, last_name, email, phone, email_verified, phone_verified, password from admins where email = ?`;
 export const find_trainer = `select count(*) as count from trainers where email = ?`;
 export const find_trainer_with_token = `select count(*) as count from trainers where email = ? and auth_token = ?`;
 export const create_trainer = `insert into trainers (first_name,last_name,email,salary,auth_token) values (?,?,?,?,?)`;
@@ -99,3 +99,4 @@ export const get_student_by_id = `select * from students where id = ?`;
 export const delete_leads = `delete from leads where id = ?`;
 export const update_leads = `update leads set ? where id = ?`;
 export const get_recurring_class_by_id = `select * from classes where recurrance_id = ?`;
+export const get_all_users = `select id, first_name, last_name, email, phone, role, status from admins`;

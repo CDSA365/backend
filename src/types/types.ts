@@ -38,6 +38,7 @@ export interface RotuePaths {
     index: string;
     smsTest: string;
     getAdmin: string;
+    getAllAdmin: string;
     getAllTrainers: string;
     getTrainers: string;
     adminRegister: string;

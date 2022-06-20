@@ -69,6 +69,7 @@ export default class Routes {
             index: "/",
             smsTest: "/sms/test",
             getAdmin: "/admin/:id",
+            getAllAdmin: "/admin/all",
             getAllTrainers: "/admin/trainers/all",
             getTrainers: "/admin/trainers",
             adminRegister: "/admin/register",
@@ -215,6 +216,7 @@ export default class Routes {
         );
         this.router.get(this.paths.verifyToken, this.authCtrl.verifyToken);
         this.router.get(this.paths.getStudent, this.studentCtrl.getStudent);
+        this.router.get(this.paths.getAllAdmin, this.adminCtrl.getAllAdmins);
         this.router.get(
             this.paths.fetchAnnouncement,
             this.announcementCtrl.getAnnouncements
