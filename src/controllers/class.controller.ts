@@ -63,6 +63,7 @@ export default class ClassController {
                     minute: end.split(":").pop(),
                     second: 0,
                 });
+                console.log("START END", startDateTime, endDateTime);
                 const timeDiff = moment(endDateTime).diff(startDateTime);
                 const diff = moment.duration(timeDiff);
                 dataArray.push({
