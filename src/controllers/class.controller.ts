@@ -41,15 +41,28 @@ export default class ClassController {
         try {
             const dates: string[] = req.body.date;
             const { start, end } = req.body;
+            console.log(dates, start, end);
             const dataArray: any[] = [];
             const recurranceID = uniqid();
             dates.map((date) => {
-                const format = "YYYY/MM/DD HH:mm";
-                const dateReceived = moment(date).format("YYYY/MM/DD");
-                const startTime = moment(dateReceived + " " + start, format);
-                const endTime = moment(dateReceived + " " + end, format);
-                const startDateTime = startTime.tz("Asia/Kolkata").format();
-                const endDateTime = endTime.tz("Asia/Kolkata").format();
+                // const format = "YYYY/MM/DD HH:mm";
+                // const dateReceived = moment(date).format("YYYY/MM/DD");
+                // const startTime = moment(dateReceived + " " + start, format);
+                // const endTime = moment(dateReceived + " " + end, format);
+                // const startDateTime = startTime.tz("Asia/Kolkata").format();
+                // const endDateTime = endTime.tz("Asia/Kolkata").format();
+                // const timeDiff = moment(endDateTime).diff(startDateTime);
+                // const diff = moment.duration(timeDiff);
+                const startDateTime = moment(date).set({
+                    hour: start.split(":").shift(),
+                    minute: start.split(":").pop(),
+                    second: 0,
+                });
+                const endDateTime = moment(date).set({
+                    hour: end.split(":").shift(),
+                    minute: end.split(":").pop(),
+                    second: 0,
+                });
                 const timeDiff = moment(endDateTime).diff(startDateTime);
                 const diff = moment.duration(timeDiff);
                 dataArray.push({
@@ -57,8 +70,8 @@ export default class ClassController {
                     title: req.body.title,
                     description: req.body.description,
                     slug: createSlugWithKey(req.body.title),
-                    start_time: startDateTime,
-                    end_time: endDateTime,
+                    start_time: startDateTime.format(),
+                    end_time: endDateTime.format(),
                     duration: Number(diff.asMinutes()),
                     recurring: req.body.recurring ? 1 : 0,
                     status: req.body.status ?? 0,
