@@ -44,32 +44,23 @@ export default class ClassController {
             console.log(dates, start, end);
             const dataArray: any[] = [];
             const recurranceID = uniqid();
-            dates.map((date) => {
-                const offset = moment(date).utcOffset();
-                const startDateTime = moment(date).set({
-                    hour: start.split(":").shift(),
-                    minute: start.split(":").pop(),
-                    second: 0,
-                });
-                const endDateTime = moment(date).set({
-                    hour: end.split(":").shift(),
-                    minute: end.split(":").pop(),
-                    second: 0,
-                });
-                console.log(
-                    "START END",
-                    startDateTime.utcOffset(offset).format(),
-                    endDateTime.utcOffset(offset).format()
-                );
-                const timeDiff = moment(endDateTime).diff(startDateTime);
+            dates.map((dateTime: string) => {
+                const dt = dateTime.split("T").shift();
+                const offset = dateTime.split("T").pop()?.split("+").pop();
+                const startTime = `${start}:00`;
+                const endTime = `${end}:00`;
+                const startDT = [[dt, startTime].join("T"), offset].join("+");
+                const endDT = [[dt, endTime].join("T"), offset].join("+");
+                const timeDiff = moment(endDT).diff(startDT);
                 const diff = moment.duration(timeDiff);
+                console.log(startDT, endDT);
                 dataArray.push({
                     recurrance_id: recurranceID,
                     title: req.body.title,
                     description: req.body.description,
                     slug: createSlugWithKey(req.body.title),
-                    start_time: startDateTime.utcOffset(offset).format(),
-                    end_time: endDateTime.utcOffset(offset).format(),
+                    start_time: startDT,
+                    end_time: endDT,
                     duration: Number(diff.asMinutes()),
                     recurring: req.body.recurring ? 1 : 0,
                     status: req.body.status ?? 0,
