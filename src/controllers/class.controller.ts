@@ -41,7 +41,6 @@ export default class ClassController {
         try {
             const dates: string[] = req.body.date;
             const { start, end } = req.body;
-            console.log(dates, start, end);
             const dataArray: any[] = [];
             const recurranceID = uniqid();
             dates.map((dateTime: string) => {
