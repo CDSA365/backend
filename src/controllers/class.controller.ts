@@ -48,8 +48,8 @@ export default class ClassController {
                 const dateReceived = moment(date).format("YYYY/MM/DD");
                 const startTime = moment(dateReceived + " " + start, format);
                 const endTime = moment(dateReceived + " " + end, format);
-                const startDateTime = startTime.format();
-                const endDateTime = endTime.format();
+                const startDateTime = startTime.tz("Asia/Kolkata").format();
+                const endDateTime = endTime.tz("Asia/Kolkata").format();
                 const timeDiff = moment(endDateTime).diff(startDateTime);
                 const diff = moment.duration(timeDiff);
                 dataArray.push({
