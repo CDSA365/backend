@@ -45,14 +45,7 @@ export default class ClassController {
             const dataArray: any[] = [];
             const recurranceID = uniqid();
             dates.map((date) => {
-                // const format = "YYYY/MM/DD HH:mm";
-                // const dateReceived = moment(date).format("YYYY/MM/DD");
-                // const startTime = moment(dateReceived + " " + start, format);
-                // const endTime = moment(dateReceived + " " + end, format);
-                // const startDateTime = startTime.tz("Asia/Kolkata").format();
-                // const endDateTime = endTime.tz("Asia/Kolkata").format();
-                // const timeDiff = moment(endDateTime).diff(startDateTime);
-                // const diff = moment.duration(timeDiff);
+                const offset = moment(date).utcOffset();
                 const startDateTime = moment(date).set({
                     hour: start.split(":").shift(),
                     minute: start.split(":").pop(),
@@ -63,7 +56,11 @@ export default class ClassController {
                     minute: end.split(":").pop(),
                     second: 0,
                 });
-                console.log("START END", startDateTime, endDateTime);
+                console.log(
+                    "START END",
+                    startDateTime.utcOffset(offset).format(),
+                    endDateTime.utcOffset(offset).format()
+                );
                 const timeDiff = moment(endDateTime).diff(startDateTime);
                 const diff = moment.duration(timeDiff);
                 dataArray.push({
@@ -71,8 +68,8 @@ export default class ClassController {
                     title: req.body.title,
                     description: req.body.description,
                     slug: createSlugWithKey(req.body.title),
-                    start_time: startDateTime.format(),
-                    end_time: endDateTime.format(),
+                    start_time: startDateTime.utcOffset(offset).format(),
+                    end_time: endDateTime.utcOffset(offset).format(),
                     duration: Number(diff.asMinutes()),
                     recurring: req.body.recurring ? 1 : 0,
                     status: req.body.status ?? 0,
