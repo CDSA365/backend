@@ -102,3 +102,4 @@ export const get_recurring_class_by_id = `select * from classes where recurrance
 export const get_all_users = `select id, first_name, last_name, email, phone, role, status from admins`;
 export const create_new_user = `insert into admins set ?`;
 export const delete_user = `delete from admins where id = ?`;
+export const search_for_user = `select count(*) as count from admins where email = ? or phone = ?`;

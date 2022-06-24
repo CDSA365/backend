@@ -5,6 +5,7 @@ import {
     InvitationEmailContext,
     PasswordResetEmailContext,
     TransportInfo,
+    UserCreationEmailContext,
     VerificationEmailContext,
 } from "../types/types";
 import { compile } from "handlebars";
@@ -64,6 +65,17 @@ export default class EmailService {
         const location = `${
             API_STAGE === "prod" ? "." : ".."
         }/email-templates/reset-password-template.mjml`;
+        const templatePath = path.join(__dirname, location);
+        return await this.send(templatePath, info, context);
+    };
+
+    public AccountCreationEmail = async (
+        info: TransportInfo,
+        context: UserCreationEmailContext
+    ) => {
+        const location = `${
+            API_STAGE === "prod" ? "." : ".."
+        }/email-templates/user-creation-template.mjml`;
         const templatePath = path.join(__dirname, location);
         return await this.send(templatePath, info, context);
     };

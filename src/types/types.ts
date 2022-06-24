@@ -148,6 +148,12 @@ export interface ContactFormEmailContext extends EmailContext {
 export interface PasswordResetEmailContext extends EmailContext {
     link: string;
 }
+
+export interface UserCreationEmailContext extends EmailContext {
+    link: string;
+    username: string;
+    password: string;
+}
 export interface PromiseFulfilledResult<T> {
     status: "fulfilled";
     value: T;

@@ -1,0 +1,35 @@
+<mjml>
+    <mj-head>
+        <mj-preview>Account created with CDSA</mj-preview>
+    </mj-head>
+    <mj-body background-color="#d7dde5">
+        <mj-wrapper border-radius="8px">
+            <mj-section background-color="#1e3a8a"></mj-section>
+            <mj-section background-color="#fff">
+                <mj-column width="560px">
+                    <mj-text font-size="16px" font-weight="bold" align="left">
+                        Account created with CDSA
+                    </mj-text>
+                    <mj-text line-height="18px" align="left">
+                        Hi {{first_name}}, your user account has been created with Carpe Diem Skills Academy. Please login to the portal {{link}} with the username and the temporary password generated for you. You will be asked to reset your temporary password during login.
+                    </mj-text>
+                    <mj-text line-height="18px" align="left">Username: {{username}}</mj-text>
+                    <mj-text line-height="18px" align="left">Password: {{password}}</mj-text>
+                </mj-column>
+            </mj-section>
+            <mj-section background-color="#eff6ff">
+                <mj-column width="560px">
+                    <mj-text color="#777" align="center">
+                        <small><b>Carpe Diem Skills Academy<b></small>
+                    </mj-text>
+                    <mj-text color="#777" align="center">
+                        <small
+                            >This is a system generated email. Do no reply to
+                            this email or email address</small
+                        >
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
+    </mj-body>
+</mjml>
