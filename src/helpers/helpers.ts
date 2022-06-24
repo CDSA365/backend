@@ -1,6 +1,8 @@
 import shortid from "shortid";
 import { SSM } from "aws-sdk";
 import moment from "moment";
+import speakeasy, { GenerateSecretOptions } from "speakeasy";
+import * as QRCode from "qrcode";
 
 export const createSlug = (string: string) => {
     return string
@@ -54,4 +56,16 @@ export const getBusinessDays = (endDate: string, startDate: string) => {
     if (firstDay.day() == 0) calcBusinessDays--; //SUN
 
     return calcBusinessDays;
+};
+
+export const generateSecrets = async (email: string) => {
+    const options: GenerateSecretOptions = {
+        length: 20,
+        issuer: `CDSA365 (${email})`,
+        name: `CDSA365 (${email})`,
+    };
+    const secret = speakeasy.generateSecret(options);
+    const secretUrl = secret.otpauth_url as string;
+    const qrcode = await QRCode.toDataURL(secretUrl);
+    return [secret.base32, qrcode];
 };

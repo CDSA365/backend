@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import md5 from "md5";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 import { user_exists } from "../constants/constant";
@@ -23,12 +22,12 @@ import {
     VerificationEmailContext,
     WriteResult,
 } from "../types/types";
-import speakeasy, { GenerateSecretOptions } from "speakeasy";
-import * as QRCode from "qrcode";
+import speakeasy from "speakeasy";
 import EmailService from "../services/mail-service";
 import Token from "../services/token-service";
 import DataTransformer from "../services/data-transform-service";
 import moment from "moment";
+import { generateSecrets } from "../helpers/helpers";
 
 const { ADMIN_PORTAL, SENDER_EMAIL, STUDENT_PORTAL, TRAINER_PORTAL } =
     process.env;
@@ -76,7 +75,7 @@ export default class AuthController {
     ): Promise<[WriteResult, string]> => {
         try {
             const { first_name, last_name, email, phone, password } = admin;
-            const [secret_token, qrcode] = await this.generateSecrets(email);
+            const [secret_token, qrcode] = await generateSecrets(email);
             const [result] = await conn.query<ResultSetHeader>(create_admin, [
                 first_name,
                 last_name,
@@ -90,18 +89,6 @@ export default class AuthController {
         } catch (error: any) {
             throw new Error(error.message);
         }
-    };
-
-    private generateSecrets = async (email: string) => {
-        const options: GenerateSecretOptions = {
-            length: 20,
-            issuer: `CDSA365 (${email})`,
-            name: `CDSA365 (${email})`,
-        };
-        const secret = speakeasy.generateSecret(options);
-        const secretUrl = secret.otpauth_url as string;
-        const qrcode = await QRCode.toDataURL(secretUrl);
-        return [secret.base32, qrcode];
     };
 
     public verifyTotp = async (req: Request, res: Response) => {

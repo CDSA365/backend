@@ -70,6 +70,8 @@ export default class Routes {
             smsTest: "/sms/test",
             getAdmin: "/admin/:id",
             getAllAdmin: "/admin/all",
+            createAdmin: "/admin/create",
+            deleteAdmin: "/admin/delete/:id",
             getAllTrainers: "/admin/trainers/all",
             getTrainers: "/admin/trainers",
             adminRegister: "/admin/register",
@@ -359,6 +361,7 @@ export default class Routes {
             this.paths.updatePassword,
             this.authCtrl.updatePassword
         );
+        this.router.post(this.paths.createAdmin, this.adminCtrl.createUser);
     };
 
     /*******************
@@ -394,5 +397,6 @@ export default class Routes {
             this.paymentCtrl.deletePayment
         );
         this.router.delete(this.paths.deleteLeads, this.leadsCtrl.deleteLeads);
+        this.router.delete(this.paths.deleteAdmin, this.adminCtrl.deleteUser);
     };
 }

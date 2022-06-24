@@ -100,3 +100,5 @@ export const delete_leads = `delete from leads where id = ?`;
 export const update_leads = `update leads set ? where id = ?`;
 export const get_recurring_class_by_id = `select * from classes where recurrance_id = ?`;
 export const get_all_users = `select id, first_name, last_name, email, phone, role, status from admins`;
+export const create_new_user = `insert into admins set ?`;
+export const delete_user = `delete from admins where id = ?`;

@@ -82,10 +82,12 @@ export default class CommonController {
                 user,
                 cat_id,
             ]);
+            console.log(entity);
             if (entity === "trainer") query = add_to_trainer_category;
             if (entity === "student") query = add_to_student_category;
             if (entity === "class") query = add_to_class_category;
             const [result] = await conn.query<ResultSetHeader>(query, [values]);
+            console.log(result);
             if (result.affectedRows > 0) {
                 res.status(200).json({
                     success: true,
@@ -98,6 +100,7 @@ export default class CommonController {
                 });
             }
         } catch (error: any) {
+            console.log(error);
             res.status(500).json({ error: true, message: error.message });
         } finally {
             conn.release();

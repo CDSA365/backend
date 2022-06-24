@@ -39,6 +39,8 @@ export interface RotuePaths {
     smsTest: string;
     getAdmin: string;
     getAllAdmin: string;
+    createAdmin: string;
+    deleteAdmin: string;
     getAllTrainers: string;
     getTrainers: string;
     adminRegister: string;

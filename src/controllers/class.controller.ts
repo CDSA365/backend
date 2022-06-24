@@ -52,7 +52,6 @@ export default class ClassController {
                 const endDT = [[dt, endTime].join("T"), offset].join("+");
                 const timeDiff = moment(endDT).diff(startDT);
                 const diff = moment.duration(timeDiff);
-                console.log(startDT, endDT);
                 dataArray.push({
                     recurrance_id: recurranceID,
                     title: req.body.title,
