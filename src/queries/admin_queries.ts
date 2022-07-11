@@ -95,7 +95,7 @@ export const delete_category = `delete from ?? where id = ?`;
 export const udpate_password = `update ?? set password = ? where id = ?`;
 export const get_data_for_token = `select id, email, auth_token, status from ?? where email = ? and auth_token = ?`;
 export const delete_payment = `delete from student_payment_history where receipt_id = ?`;
-export const get_student_by_id = `select * from students where id = ?`;
+export const get_student_by_id = `select s.*, sph.next_due from students s left join student_payment_history sph on sph.student_id = s.id where s.id = ? order by sph.created_at desc limit 1;`;
 export const delete_leads = `delete from leads where id = ?`;
 export const update_leads = `update leads set ? where id = ?`;
 export const get_recurring_class_by_id = `select * from classes where recurrance_id = ?`;
