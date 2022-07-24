@@ -113,6 +113,12 @@ export interface RotuePaths {
     updatePassword: string;
     deletePaymentEntry: string;
     deleteLeads: string;
+    getSeo: string;
+    createSeo: string;
+    readAllSeo: string;
+    updateSeo: string;
+    deleteSeo: string;
+    activateSeo: string;
 }
 
 export interface TransportInfo {

@@ -15,6 +15,7 @@ import AnnouncementController from "../controllers/announcement.controller";
 import { RotuePaths } from "../types/types";
 import ContactFormController from "../controllers/contactform.controller";
 import OTPController from "../controllers/otp.controller";
+import SeoController from "../controllers/seo.controller";
 
 export default class Routes {
     public router: Router;
@@ -34,6 +35,7 @@ export default class Routes {
     protected announcementCtrl: AnnouncementController;
     protected contactFormCtrl: ContactFormController;
     protected otpCntrl: OTPController;
+    protected seoCtrl: SeoController;
 
     constructor() {
         this.router = Router();
@@ -52,6 +54,7 @@ export default class Routes {
         this.announcementCtrl = new AnnouncementController();
         this.contactFormCtrl = new ContactFormController();
         this.otpCntrl = new OTPController();
+        this.seoCtrl = new SeoController();
         this.paths = this.setRoutePaths();
         this.init();
     }
@@ -144,6 +147,12 @@ export default class Routes {
             deletePaymentEntry: "/payments/delete/:receipt_no",
             getStudent: "/admin/student/:student_id",
             updateLeads: "/leads/update/:lead_id",
+            getSeo: "/seo/get",
+            createSeo: "/seo/create",
+            readAllSeo: "/seo/read-all",
+            updateSeo: "/seo/update/:id",
+            deleteSeo: "/seo/delete/:id",
+            activateSeo: "/seo/activate",
         };
     };
 
@@ -219,6 +228,8 @@ export default class Routes {
         this.router.get(this.paths.verifyToken, this.authCtrl.verifyToken);
         this.router.get(this.paths.getStudent, this.studentCtrl.getStudent);
         this.router.get(this.paths.getAllAdmin, this.adminCtrl.getAllAdmins);
+        this.router.get(this.paths.getSeo, this.seoCtrl.get);
+        this.router.get(this.paths.readAllSeo, this.seoCtrl.readAll);
         this.router.get(
             this.paths.fetchAnnouncement,
             this.announcementCtrl.getAnnouncements
@@ -262,6 +273,8 @@ export default class Routes {
             this.commonCtrl.udpateCategory
         );
         this.router.put(this.paths.updateLeads, this.leadsCtrl.updateLeads);
+        this.router.put(this.paths.updateSeo, this.seoCtrl.update);
+        this.router.put(this.paths.activateSeo, this.seoCtrl.activate);
     };
 
     /*****************
@@ -362,6 +375,7 @@ export default class Routes {
             this.authCtrl.updatePassword
         );
         this.router.post(this.paths.createAdmin, this.adminCtrl.createUser);
+        this.router.post(this.paths.createSeo, this.seoCtrl.create);
     };
 
     /*******************
@@ -398,5 +412,6 @@ export default class Routes {
         );
         this.router.delete(this.paths.deleteLeads, this.leadsCtrl.deleteLeads);
         this.router.delete(this.paths.deleteAdmin, this.adminCtrl.deleteUser);
+        this.router.delete(this.paths.deleteSeo, this.seoCtrl.delete);
     };
 }
