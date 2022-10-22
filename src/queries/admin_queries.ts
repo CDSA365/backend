@@ -103,7 +103,8 @@ export const get_all_users = `select id, first_name, last_name, email, phone, ro
 export const create_new_user = `insert into admins set ?`;
 export const delete_user = `delete from admins where id = ?`;
 export const search_for_user = `select count(*) as count from admins where email = ? or phone = ?`;
-export const create_seo_record = `insert into seo_config set ?`;
+export const create_seo_record = `insert into seo_config (page,title,description,keywords) values (?,?,?,?) on duplicate key update page = values(page), title = values(title), description = values(description), keywords = values(keywords)`;
 export const read_all_seo_record = `select * from seo_config`;
 export const get_active_seo_config = `select id, type, content from seo_config where status = 1`;
 export const delete_seo_record = `delete from seo_config where id = ?`;
+export const get_seo_for_page = `select * from seo_config where page = ?`;

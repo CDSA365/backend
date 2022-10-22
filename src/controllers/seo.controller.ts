@@ -5,6 +5,7 @@ import {
     create_seo_record,
     delete_seo_record,
     get_active_seo_config,
+    get_seo_for_page,
     read_all_seo_record,
 } from "../queries/admin_queries";
 
@@ -18,10 +19,20 @@ export default class SeoController {
     public get = async (req: Request, res: Response) => {
         const conn = await this.db.getConnection();
         try {
-            const [result] = await conn.query<RowDataPacket[]>(
-                get_active_seo_config
+            const { page } = req.query;
+            console.log("page", req);
+            const [[result]] = await conn.query<RowDataPacket[]>(
+                get_seo_for_page,
+                [page]
             );
-            res.status(200).json(result);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(403).json({
+                    error: true,
+                    message: "Data not found",
+                });
+            }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
         } finally {
@@ -32,9 +43,10 @@ export default class SeoController {
     public create = async (req: Request, res: Response) => {
         const conn = await this.db.getConnection();
         try {
+            const { page, title, description, keywords } = req.body;
             const [result] = await conn.query<ResultSetHeader>(
                 create_seo_record,
-                req.body
+                [page, title, description, keywords]
             );
             if (result.affectedRows) {
                 res.status(200).json(result);
