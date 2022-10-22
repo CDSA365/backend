@@ -12,7 +12,8 @@
         "build:dev": "rm -rf dist && env-cmd -e development webpack --mode=development --node-env=development",
         "build:prod": "webpack --mode=production --node-env=production",
         "watch": "webpack --watch",
-        "serve": "webpack serve"
+        "serve": "webpack serve",
+        "sync": "git push -u https://github.com/CDSA365/backend.git"
     },
     "repository": {
         "type": "git",
