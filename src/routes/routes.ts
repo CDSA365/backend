@@ -153,6 +153,7 @@ export default class Routes {
             updateSeo: "/seo/update/:id",
             deleteSeo: "/seo/delete/:id",
             activateSeo: "/seo/activate",
+            updateStudentPassword: "/student/update-password/:id",
         };
     };
 
@@ -376,6 +377,10 @@ export default class Routes {
         );
         this.router.post(this.paths.createAdmin, this.adminCtrl.createUser);
         this.router.post(this.paths.createSeo, this.seoCtrl.create);
+        this.router.post(
+            this.paths.updateStudentPassword,
+            this.studentCtrl.updateStudentPassword
+        );
     };
 
     /*******************

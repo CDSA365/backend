@@ -6,6 +6,7 @@ import {
     check_if_student_exists,
     find_student,
     get_all_students,
+    get_data_matching_password,
     get_fee_period_gap,
     get_students_classes,
     get_student_attendance_report,
@@ -13,6 +14,7 @@ import {
     mark_student_attendance,
     register_student,
     update_student,
+    update_student_password,
 } from "../queries/admin_queries";
 import DataTransformer from "../services/data-transform-service";
 import SMS from "../services/sms-service";
@@ -176,6 +178,7 @@ export default class StudentController {
             if (result.affectedRows) {
                 this.studentService
                     .notifyStudentOnAssignedClass(list, id)
+                    .catch((err) => console.log(err))
                     .finally(() => res.status(200).json(result));
             } else {
                 res.status(422).json({
@@ -259,6 +262,40 @@ export default class StudentController {
             }
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
+        }
+    };
+
+    public updateStudentPassword = async (req: Request, res: Response) => {
+        const conn = await this.db.getConnection();
+        try {
+            const { id } = req.params;
+            const { current_password, confirm_password } = req.body;
+            const currentPassword = this.transformer.encrypt(current_password);
+            const newPassword = this.transformer.encrypt(confirm_password);
+            const [[{ count }]] = await conn.query<RowDataPacket[]>(
+                get_data_matching_password,
+                [id, currentPassword]
+            );
+            if (!count) {
+                res.status(403).json({
+                    error: true,
+                    message: "Current password is not valid",
+                });
+            } else {
+                const [result] = await conn.query<ResultSetHeader>(
+                    update_student_password,
+                    [newPassword, id, currentPassword]
+                );
+                if (result.affectedRows) {
+                    res.status(200).json(result);
+                } else {
+                    throw new Error("Unable to update password");
+                }
+            }
+        } catch (error: any) {
+            res.status(500).json({ error: true, message: error.message });
+        } finally {
+            conn.release();
         }
     };
 }

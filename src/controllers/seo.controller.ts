@@ -20,7 +20,6 @@ export default class SeoController {
         const conn = await this.db.getConnection();
         try {
             const { page } = req.query;
-            console.log("page", req);
             const [[result]] = await conn.query<RowDataPacket[]>(
                 get_seo_for_page,
                 [page]

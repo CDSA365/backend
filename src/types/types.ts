@@ -119,6 +119,7 @@ export interface RotuePaths {
     updateSeo: string;
     deleteSeo: string;
     activateSeo: string;
+    updateStudentPassword: string;
 }
 
 export interface TransportInfo {
