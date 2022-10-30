@@ -154,6 +154,7 @@ export default class Routes {
             deleteSeo: "/seo/delete/:id",
             activateSeo: "/seo/activate",
             updateStudentPassword: "/student/update-password/:id",
+            updateImageSeo: "/seo/images/update/:imageId",
         };
     };
 
@@ -276,6 +277,7 @@ export default class Routes {
         this.router.put(this.paths.updateLeads, this.leadsCtrl.updateLeads);
         this.router.put(this.paths.updateSeo, this.seoCtrl.update);
         this.router.put(this.paths.activateSeo, this.seoCtrl.activate);
+        this.router.put(this.paths.updateImageSeo, this.seoCtrl.updateImageSeo);
     };
 
     /*****************

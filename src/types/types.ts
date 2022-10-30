@@ -120,6 +120,7 @@ export interface RotuePaths {
     deleteSeo: string;
     activateSeo: string;
     updateStudentPassword: string;
+    updateImageSeo: string;
 }
 
 export interface TransportInfo {
