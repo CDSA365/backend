@@ -46,11 +46,7 @@ export const formatPhone = (num: number | string) => {
 export const getBusinessDays = (endDate: string, startDate: string) => {
     var lastDay = moment(endDate);
     var firstDay = moment(startDate);
-    let calcBusinessDays =
-        1 +
-        (lastDay.diff(firstDay, "days") * 5 -
-            (firstDay.day() - lastDay.day()) * 2) /
-            7;
+    let calcBusinessDays = 1 + (lastDay.diff(firstDay, "days") * 5 - (firstDay.day() - lastDay.day()) * 2) / 7;
 
     if (lastDay.day() == 6) calcBusinessDays--; //SAT
     if (firstDay.day() == 0) calcBusinessDays--; //SUN

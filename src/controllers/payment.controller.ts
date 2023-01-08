@@ -36,22 +36,12 @@ export default class PaymentController {
         });
     }
 
-    private getNextDue = async (
-        gap: number,
-        period: any,
-        student_id: number,
-        type: string = "self"
-    ) => {
+    private getNextDue = async (gap: number, period: any, student_id: number, type: string = "self") => {
         const conn = await this.db.getConnection();
         let nextDue = moment().add(gap, period).format();
         try {
-            const query =
-                type === "self"
-                    ? get_last_payment_due_for_self
-                    : get_last_payment_due_for_manual;
-            const [[result]] = await conn.query<RowDataPacket[]>(query, [
-                student_id,
-            ]);
+            const query = type === "self" ? get_last_payment_due_for_self : get_last_payment_due_for_manual;
+            const [[result]] = await conn.query<RowDataPacket[]>(query, [student_id]);
             if (result && result.next_due) {
                 nextDue = moment(result.next_due).add(gap, period).format();
             }
@@ -78,6 +68,7 @@ export default class PaymentController {
                 });
             } else {
                 const conn = await this.db.getConnection();
+                console.log(order);
                 try {
                     const values = {
                         student_id: req.body.student_id,
@@ -90,15 +81,9 @@ export default class PaymentController {
                         offer_id: order.offer_id,
                         status: order.status,
                         notes: JSON.stringify(order.notes),
-                        order_created_at: moment
-                            .unix(order.created_at)
-                            .tz("Asia/Kolkata")
-                            .format(),
+                        order_created_at: moment.unix(order.created_at).tz("Asia/Kolkata").format(),
                     };
-                    const [result] = await conn.query<ResultSetHeader>(
-                        create_payment_history,
-                        [values]
-                    );
+                    const [result] = await conn.query<ResultSetHeader>(create_payment_history, [values]);
                     if (result.affectedRows) {
                         res.status(200).json(order);
                     } else {
@@ -129,17 +114,9 @@ export default class PaymentController {
                 status: "paid",
                 notes: "Captured Manually",
                 order_created_at: moment().format(),
-                next_due: await this.getNextDue(
-                    req.body.gap,
-                    req.body.period,
-                    req.body.student_id,
-                    "manual"
-                ),
+                next_due: await this.getNextDue(req.body.gap, req.body.period, req.body.student_id, "manual"),
             };
-            const [result] = await conn.query<ResultSetHeader>(
-                create_payment_history,
-                [value]
-            );
+            const [result] = await conn.query<ResultSetHeader>(create_payment_history, [value]);
             if (result.affectedRows) {
                 res.status(200).json(value);
             } else {
@@ -156,31 +133,25 @@ export default class PaymentController {
     };
 
     public verifyPayment = async (req: Request, res: Response) => {
-        const body =
-            req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id;
-        const signature = crypto
-            .createHmac("sha256", String(PAYMENT_SECRET))
-            .update(body.toString())
-            .digest("hex");
+        const body = req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id;
+        const signature = crypto.createHmac("sha256", String(PAYMENT_SECRET)).update(body.toString()).digest("hex");
         if (signature === req.body.razorpay_signature) {
             const conn = await this.db.getConnection();
             try {
                 const values = {
+                    student_id: req.body.student_id,
                     payment_id: req.body.razorpay_payment_id,
                     paid: req.body.paid,
                     due: 0,
                     status: req.body.status,
                     error_code: req.body.error_code,
-                    next_due: await this.getNextDue(
-                        req.body.gap,
-                        req.body.period,
-                        req.body.id
-                    ),
+                    notes: req.body.notes ?? null,
+                    next_due: await this.getNextDue(req.body.gap, req.body.period, req.body.id),
                 };
-                const [result] = await conn.query<ResultSetHeader>(
-                    update_payment_history,
-                    [values, req.body.razorpay_order_id]
-                );
+                const [result] = await conn.query<ResultSetHeader>(update_payment_history, [
+                    values,
+                    req.body.razorpay_order_id,
+                ]);
                 if (result.affectedRows) {
                     res.status(200).json(result);
                 } else {
@@ -194,8 +165,7 @@ export default class PaymentController {
         } else {
             res.status(422).json({
                 error: true,
-                message:
-                    "Unable to verify payment. Please contact support for assistance",
+                message: "Unable to verify payment. Please contact support for assistance",
             });
         }
     };
@@ -213,10 +183,7 @@ export default class PaymentController {
                 payment_id: payment_id,
                 status,
             };
-            const [result] = await conn.query<ResultSetHeader>(
-                update_payment_history,
-                [values, order_id]
-            );
+            const [result] = await conn.query<ResultSetHeader>(update_payment_history, [values, order_id]);
             if (result.affectedRows) {
                 res.status(200).json(result);
             } else {
@@ -233,10 +200,7 @@ export default class PaymentController {
         const { id } = req.params;
         const conn = await this.db.getConnection();
         try {
-            const [result] = await conn.query<RowDataPacket[]>(
-                get_payment_history,
-                [id]
-            );
+            const [result] = await conn.query<RowDataPacket[]>(get_payment_history, [id]);
             res.status(200).json(result);
         } catch (error: any) {
             res.status(500).json({ error: true, message: error.message });
@@ -245,10 +209,7 @@ export default class PaymentController {
         }
     };
 
-    public getPaymentHistoryforManualCapture = async (
-        req: Request,
-        res: Response
-    ) => {
+    public getPaymentHistoryforManualCapture = async (req: Request, res: Response) => {
         const { entity, key } = req.params;
         const conn = await this.db.getConnection();
         let query = "";
@@ -307,18 +268,11 @@ export default class PaymentController {
         try {
             const date = currentDue ? moment(currentDue) : moment();
             const next_due = moment(date).add(gap, period).format();
-            const [result] = await conn.query<ResultSetHeader>(
-                extend_due_date,
-                [next_due, payment_id]
-            );
+            const [result] = await conn.query<ResultSetHeader>(extend_due_date, [next_due, payment_id]);
             if (result.affectedRows) {
-                const message = `Hi!, Your next fee payment due date is extended ${gap} ${period} to ${moment(
-                    next_due
-                )
+                const message = `Hi!, Your next fee payment due date is extended ${gap} ${period} to ${moment(next_due)
                     .tz("Asia/Kolkata")
-                    .format(
-                        "LL"
-                    )}. Please pay the fee before the due date to continue taking classes.`;
+                    .format("LL")}. Please pay the fee before the due date to continue taking classes.`;
                 this.sms.send(message);
                 res.status(200).json(result);
             } else {
@@ -335,10 +289,7 @@ export default class PaymentController {
         const { id } = req.params;
         const conn = await this.db.getConnection();
         try {
-            const [result] = await conn.query<ResultSetHeader>(
-                update_payment_history_by_id,
-                [req.body, id]
-            );
+            const [result] = await conn.query<ResultSetHeader>(update_payment_history_by_id, [req.body, id]);
             if (result.affectedRows) {
                 res.status(200).json(result);
             } else {
@@ -355,9 +306,7 @@ export default class PaymentController {
         const { receipt_no } = req.params;
         const conn = await this.db.getConnection();
         try {
-            const [result] = await conn.query<ResultSetHeader>(delete_payment, [
-                receipt_no,
-            ]);
+            const [result] = await conn.query<ResultSetHeader>(delete_payment, [receipt_no]);
             if (result.affectedRows) {
                 res.status(200).json(result);
             } else {
