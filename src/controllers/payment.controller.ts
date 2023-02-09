@@ -42,7 +42,7 @@ export default class PaymentController {
         try {
             const query = type === "self" ? get_last_payment_due_for_self : get_last_payment_due_for_manual;
             const [[result]] = await conn.query<RowDataPacket[]>(query, [student_id]);
-            if (result && result.next_due) {
+            if (result && result.next_due && moment().isBefore(moment(result.next_due))) {
                 nextDue = moment(result.next_due).add(gap, period).format();
             }
             return nextDue;
